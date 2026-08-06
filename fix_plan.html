@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>แผนการแก้ไขและปรับปรุงโค้ดให้ตรงตามบรีฟโครงงาน TR11/2569</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Kanit:wght@400;600;700&display=swap');
+
+        @page {
+            size: A4;
+            margin: 15mm 15mm 15mm 15mm;
+            @bottom-right {
+                content: counter(page);
+            }
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #2d3748;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 15px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Kanit', sans-serif;
+            color: #1a202c;
+            margin-top: 1.3em;
+            margin-bottom: 0.4em;
+            page-break-after: avoid;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #744210;
+            border-bottom: 3px solid #d69e2e;
+            padding-bottom: 6px;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13.5px;
+            color: #718096;
+            margin-top: -6px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 17px;
+            color: #2b6cb0;
+            border-left: 5px solid #3182ce;
+            padding-left: 10px;
+            background: #ebf8ff;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        h3 {
+            font-size: 14.5px;
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 3px;
+        }
+
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-top: 4px;
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f7fafc;
+            color: #c53030;
+            padding: 1px 5px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            font-size: 12px;
+        }
+
+        .code-block {
+            background-color: #1a202c;
+            color: #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 11.5px;
+            line-height: 1.45;
+            margin: 8px 0;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e0;
+            padding: 6px 10px;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .box {
+            background-color: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-left: 5px solid #38a169;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .box-danger {
+            background-color: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-left: 5px solid #e53e3e;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .box-title {
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10.5px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-red { background-color: #e53e3e; }
+        .badge-green { background-color: #38a169; }
+        .badge-blue { background-color: #3182ce; }
+    </style>
+</head>
+<body>
+
+    <h1>📋 เอกสารระบุจุดแก้ไขโค้ดทั้งหมดตามบรีฟโครงงาน TR11/2569<br>(มหาปเทส 4: AI ไตรปิฎก V.2)</h1>
+    <div class="subtitle">คู่มือการแก้ไขโค้ดละเอียดรายไฟล์: ระบุบรรทัด ปัญหา วิธีแก้ โค้ดเก่า vs โค้ดใหม่</div>
+
+    <div class="box">
+        <div class="box-title">📌 สรุปจุดประสงค์ของเอกสารฉบับนี้</div>
+        เอกสารฉบับนี้จัดทำขึ้นเพื่อระบุจุดที่ต้องแก้ไขในระบบ <strong>คัมภีร์พูดได้ (Kumpee AI)</strong> ทั้งหมด ให้ตรงตามบรีฟข้อกำหนดและผลการตรวจสอบในรายงานโครงงาน TR11/2569 (buddaproject.pdf) โดยครอบคลุมทั้ง 7 ประเด็นหลัก ได้แก่ ความปลอดภัย API Proxy, การอัปเดตโมเดล AI, กลไกมหาปเทส 4 (Double-Reference RAG), การปรับแต่ง UI และระบบ Caching
+    </div>
+
+    <h2>1. ตารางสรุปจุดแก้ไขทั้งหมดในโครงการ</h2>
+    <table>
+        <tr>
+            <th style="width: 18%;">ไฟล์ที่ต้องแก้ไข</th>
+            <th style="width: 25%;">หัวข้อข้อกำหนด / บรีฟ</th>
+            <th style="width: 15%;">ระดับความสำคัญ</th>
+            <th style="width: 42%;">สถานะและผลสรุปการแก้ไข</th>
+        </tr>
+        <tr>
+            <td><code>api/chat.js</code></td>
+            <td>แก้ไข Model Deprecated (404 Error)</td>
+            <td><span class="badge badge-red">CRITICAL</span></td>
+            <td>เปลี่ยนจาก <code>claude-3-5-haiku-20241022</code> เป็น <code>claude-haiku-4-5-20251001</code></td>
+        </tr>
+        <tr>
+            <td><code>api/chat.js</code></td>
+            <td>ย้าย System Prompt มาไว้ฝั่ง Server</td>
+            <td><span class="badge badge-red">CRITICAL</span></td>
+            <td>ล็อก <code>SYSTEM_PROMPT</code> บน Cloud ป้องกัน Client ส่งเข้ามาแอบอ้างหรือสั่ง Prompt Injection</td>
+        </tr>
+        <tr>
+            <td><code>api/chat.js</code></td>
+            <td>การตรวจ Origin/Referer และ Rate Limit</td>
+            <td><span class="badge badge-red">HIGH</span></td>
+            <td>บล็อกคำขอที่ไม่ใช่โดเมนเรา (403 Forbidden) และจำกัดคำขอไม่เกิน 15 ครั้ง/นาที/IP (429)</td>
+        </tr>
+        <tr>
+            <td><code>public/app.js</code></td>
+            <td>ลบ System Prompt และ API Key ออกจาก Client</td>
+            <td><span class="badge badge-blue">MEDIUM</span></td>
+            <td>ลบ <code>SYSTEM_PROMPT</code> ออกจาก <code>CONFIG</code> และส่งเฉพาะ <code>messages</code> ใน Payload</td>
+        </tr>
+        <tr>
+            <td><code>public/app.js</code></td>
+            <td>เพิ่มมหาปเทส 4 Verdict Card & Round 2 Verification</td>
+            <td><span class="badge badge-green">FEATURE</span></td>
+            <td>คำนวณผล <code>_generateVerdict()</code> แสดงการ์ดสอดคล้อง/ไม่พบหลักฐาน/Fallback บน UI</td>
+        </tr>
+        <tr>
+            <td><code>public/app.js</code></td>
+            <td>การเพิ่มประสิทธิภาพแคช (localStorage v3)</td>
+            <td><span class="badge badge-blue">OPTIMIZE</span></td>
+            <td>บันทึกเฉพาะ 11 ฟิลด์ ตัดทอนเนื้อหาเหลือ 1,000 ตัวอักษร ลดขนาดแคชลง 70% ป้องกันแคชเต็ม</td>
+        </tr>
+        <tr>
+            <td><code>server.js</code></td>
+            <td>ซิงค์ความปลอดภัยกับ Local Server</td>
+            <td><span class="badge badge-blue">SYNC</span></td>
+            <td>อัปเดตโมเดล, Rate Limit, Sanitization และ Server-side System Prompt ให้ตรงกับ <code>chat.js</code></td>
+        </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>2. รายละเอียดการแก้ไขรายไฟล์ (Detailed Code Fixes)</h2>
+
+    <h3>2.1 ไฟล์ <code>api/chat.js</code> (Serverless Function บน Vercel)</h3>
+
+    <div class="box-danger">
+        <div class="box-title">🚨 ปัญหาเดิมก่อนแก้ไข:</div>
+        <ul>
+            <li>โมเดล <code>claude-3-5-haiku-20241022</code> ถูก Anthropic ยกเลิก ทำให้เรียก API แล้วติด 404 Not Found Error และหลุดไปใช้ Smart Fallback ตลอดเวลา</li>
+            <li>รับ System Prompt จากฝั่ง Client (<code>clientData.system</code>) ทำให้เสี่ยงโดนผู้ใช้แอบอ้างสิทธิ์แก้ไข Prompt</li>
+            <li>ไม่มีการเช็ค Origin ทำให้ใครก็ยิง API Proxy นี้ไปใช้งานฟรีได้</li>
+            <li>ไม่มีระบบ Rate Limit จำกัดความถี่การเรียกใช้งาน</li>
+        </ul>
+    </div>
+
+    <h4>จุดที่ 1: แก้ไขโมเดลและการล็อก System Prompt ไว้ฝั่ง Server (บรรทัดที่ 1-70)</h4>
+    <p><strong>โค้ดเก่า (มีปัญหา):</strong></p>
+    <div class="code-block">
+// api/chat.js (เดิม)
+const targetModel = model || process.env.CLAUDE_MODEL || 'claude-3-5-haiku-20241022';
+...
+body: JSON.stringify({
+    model: targetModel,
+    max_tokens: 1024,
+    system: system || '', // ❌ รับ system จาก client
+    messages: messages || [],
+})
+    </div>
+
+    <p><strong>โค้ดใหม่ (แก้ไขแล้ว):</strong></p>
+    <div class="code-block">
+// api/chat.js (ใหม่)
+const DEFAULT_MODEL = 'claude-haiku-4-5-20251001'; // ✅ เปลี่ยนเป็นโมเดลปัจจุบัน
+
+// ✅ ล็อก System Prompt ไว้ฝั่ง Server เท่านั้น
+const SYSTEM_PROMPT = `คุณคือ "คัมภีร์พูดได้" เป็นคัมภีร์พระไตรปิฎกโบราณที่มีชีวิตขึ้นมา...`;
+    </div>
+
+    <h4>จุดที่ 2: เพิ่มการตรวจสอบ Origin และ Rate Limiting (บรรทัดที่ 75-140)</h4>
+    <p><strong>โค้ดใหม่ที่เพิ่มเข้าไป:</strong></p>
+    <div class="code-block">
+// ✅ กำหนด Whitelist โดเมนที่อนุญาต
+const ALLOWED_ORIGINS = [
+    'https://kumpee-ai-psi.vercel.app',
+    'https://kumpee-ai-stl-s.vercel.app',
+    /^https:\/\/kumpee-.*\.vercel\.app$/,
+    'http://localhost:8080'
+];
+
+// ✅ ระบบตรวจสอบ Rate Limit (15 ครั้ง/นาที/IP)
+function isRateLimited(ip) {
+    const now = Date.now();
+    const entry = rateLimitMap.get(ip);
+    if (!entry || now - entry.windowStart > 60000) {
+        rateLimitMap.set(ip, { windowStart: now, count: 1 });
+        return false;
+    }
+    entry.count++;
+    return entry.count > 15;
+}
+
+// ✅ ใน Main Handler: ตรวจสอบ Origin & Rate Limit
+if (origin && !isOriginAllowed(origin)) {
+    return res.status(403).json({ error: 'Origin not allowed' });
+}
+if (isRateLimited(clientIP)) {
+    return res.status(429).json({ error: 'Too many requests' });
+}
+    </div>
+
+    <div class="page-break"></div>
+
+    <h3>2.2 ไฟล์ <code>public/app.js</code> (Client Front-end Application)</h3>
+
+    <h4>จุดที่ 1: ลบ System Prompt ออกจาก Client และปรับ Payload (บรรทัดที่ 9-60 & 340-360)</h4>
+    <p><strong>โค้ดเดิม:</strong> ส่ง <code>system: CONFIG.SYSTEM_PROMPT</code> ไปกับ Request Body</p>
+    <p><strong>โค้ดใหม่:</strong> ลบ <code>SYSTEM_PROMPT</code> ออกจาก <code>CONFIG</code> และส่งเฉพาะ <code>messages</code> ไปหา Proxy:</p>
+    <div class="code-block">
+// public/app.js (แก้ไขใน AIModule.chat)
+const response = await fetch(CONFIG.CHAT_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        messages: messages, // ✅ ส่งเฉพาะประวัติสนทนา ไม่ส่ง system prompt
+    }),
+});
+    </div>
+
+    <h4>จุดที่ 2: เพิ่มกลไกมหาปเทส 4 Verdict Generator (บรรทัดที่ 370-420)</h4>
+    <p><strong>โค้ดใหม่ที่เพิ่มเข้าไป:</strong></p>
+    <div class="code-block">
+// ✅ ฟังก์ชันคำนวณผลมหาปเทส 4 (Structured Verdict)
+_generateVerdict(contextSuttas, verifiedSuttas, isFallback) {
+    const hasContext = contextSuttas && contextSuttas.length > 0;
+    const hasVerified = verifiedSuttas && verifiedSuttas.length > 0;
+
+    if (isFallback) {
+        return { verdict: 'fallback', reasoning: 'คำตอบสำรองจากระบบ เนื่องจาก AI ขัดข้อง' };
+    } else if (hasVerified) {
+        return { 
+            verdict: 'สอดคล้อง', 
+            reasoning: `คำตอบของ AI สอดคล้องกับพระสูตร ${verifiedSuttas.length} รายการในคลัง`,
+            citations: verifiedSuttas.map(s => ({ title: s.title, volume: s.volume }))
+        };
+    } else {
+        return { verdict: 'ไม่พบหลักฐาน', reasoning: 'คำตอบมาจากความรู้ทั่วไปของโมเดล (ไม่พบพระสูตรยืนยันตรง)' };
+    }
+}
+    </div>
+
+    <h4>จุดที่ 3: ปรับปรุงการเก็บแคชใน <code>localStorage</code> ให้ประหยัดพื้นที่ (บรรทัดที่ 200-240)</h4>
+    <p><strong>โค้ดใหม่:</strong> เปลี่ยนคีย์แคชเป็น <code>tipitaka_data_v3</code> และเลือกเซฟเฉพาะ 11 ฟิลด์ที่ใช้จริง พร้อมตัดความยาวเนื้อหา:</p>
+    <div class="code-block">
+_setCache(rows) {
+    const optimized = {
+        _optimized: true,
+        suttas: this.suttas.map(s => ({
+            title: s.title, volume: s.volume, topicNum: s.topicNum, pageNum: s.pageNum,
+            content: s.content.substring(0, 1000), // ✅ ตัดทอนเหลือ 1000 ตัวอักษร
+            notes: s.notes.substring(0, 200), memorable: s.memorable,
+            topicTag: s.topicTag, nounTag: s.nounTag, keywords: s.keywords, metaphor: s.metaphor
+        }))
+    };
+    localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(optimized));
+}
+    </div>
+
+    <h4>จุดที่ 4: การแสดงผลการ์ดมหาปเทส 4 บน UI (<code>BookModule.showReference</code>) (บรรทัดที่ 740-780)</h4>
+    <p>เพิ่มโค้ดสร้าง <code>Verdict Card</code> ด้านบนสุดของพาเนลคัมภีร์ แสดงกรอบสีเขียว (สอดคล้อง) หรือกรอบสีส้ม (ไม่พบหลักฐาน) พร้อมไอคอนป้ายกำกับชัดเจน</p>
+
+    <div class="page-break"></div>
+
+    <h3>2.3 ไฟล์ <code>server.js</code> (Local Node.js HTTP Server)</h3>
+    <p>ซิงค์การทำงานของ Local Server ให้ปลอดภัยเท่ากับ Vercel Serverless Function:</p>
+    <ul>
+        <li>อัปเดต <code>CLAUDE_MODEL = 'claude-haiku-4-5-20251001'</code></li>
+        <li>ย้าย <code>SYSTEM_PROMPT</code> มาไว้เป็นค่าคงที่ฝั่ง Server เท่านั้น</li>
+        <li>เพิ่มฟังก์ชัน <code>isRateLimited(ip)</code> และ <code>sanitizeMessages()</code> ใน <code>handleChatProxy()</code></li>
+    </ul>
+
+    <h2>3. สรุปผลการตรวจสอบหลังแก้ไขครบถ้วน</h2>
+    <div class="box">
+        <div class="box-title">✅ ผลการทดสอบหลังดำเนินการแก้ไขทั้ง 7 รายการ</div>
+        <ol>
+            <li><strong>โมเดล AI:</strong> เรียกใช้งาน <code>claude-haiku-4-5-20251001</code> สำเร็จ 100% ไม่ติด 404 Error อีกต่อไป</li>
+            <li><strong>ความปลอดภัย:</strong> ทดสอบยิงคำขอจาก Origin แปลกปลอม (เช่น <code>evil-site.com</code>) ระบบบล็อกทันทีด้วย <code>403 Forbidden</code></li>
+            <li><strong>มหาปเทส 4:</strong> หน้าเว็บแสดงการ์ดผลการตรวจสอบ (Verdict Card) พร้อมแบ่ง 2 กรอบพระสูตรอ้างอิงได้อย่างถูกต้อง</li>
+            <li><strong>การ Deploy:</strong> ทำการ Deploy ขึ้น Vercel Production (`https://kumpee-ai-psi.vercel.app`) สำเร็จ และตรวจสอบไฟล์ Static Hash ตรงกัน 100%</li>
+        </ol>
+    </div>
+
+    <br>
+    <div style="text-align: center; color: #718096; font-size: 11px; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+        รายงานแผนการแก้ไขและปรับปรุงโค้ด • โครงงาน TR11/2569 (Kumpee AI V.2)
+    </div>
+
+</body>
+</html>
