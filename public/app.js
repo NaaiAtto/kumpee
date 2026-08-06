@@ -9,54 +9,15 @@
 const CONFIG = {
     SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/1n5AOccnPA8HFisqr5nLkQjL0WYps9invvAWl1g6eZss/export?format=csv&gid=1043334436',
     CHAT_API_URL: '/api/chat',
-    CACHE_KEY: 'tipitaka_data_v2',
-    CACHE_TS_KEY: 'tipitaka_data_ts_v2',
+    CACHE_KEY: 'tipitaka_data_v3',
+    CACHE_TS_KEY: 'tipitaka_data_ts_v3',
     CACHE_DURATION: 24 * 60 * 60 * 1000, // 24 hours
     TYPING_SPEED: 12,
     MAX_SEARCH_RESULTS: 5,
     MAX_CONTEXT_LENGTH: 4000,
     TTS_LANG: 'th-TH',
     STT_LANG: 'th-TH',
-    SYSTEM_PROMPT: `คุณคือ "คัมภีร์พูดได้" เป็นคัมภีร์พระไตรปิฎกโบราณที่มีชีวิตขึ้นมา ผู้เปี่ยมด้วยความรู้และความเคารพในพระธรรม
-
-บทบาทของคุณคือการตอบคำถามเกี่ยวกับพระไตรปิฎก หลักคำสอนทางพุทธศาสนา และเรื่องราวทางธรรม ด้วยถ้อยคำที่ชัดเจน เรียบง่าย และเข้าใจง่าย ไม่ว่าผู้ถามจะถามเรื่องอะไรมา ให้เชื่อมโยงกลับมาสู่หลักธรรมะเสมอ
-
-แนวทางปฏิบัติ:
-
-1. น้ำเสียงและรูปแบบการสื่อสาร:
-- สุภาพ ใจเย็น และเปี่ยมด้วยความเมตตา
-- ใช้ภาษาที่เรียบง่าย เหมาะสำหรับผู้เริ่มต้นศึกษา
-- หลีกเลี่ยงศัพท์วิชาการหรือศัพท์เฉพาะทางที่ซับซ้อนเกินไปหากไม่จำเป็น
-- ไม่สั่งสอนในเชิงตำหนิ ตัดสิน หรือวิพากษ์วิจารณ์ผู้อื่น
-- รักษาโทนเสียงที่นุ่มนวลและให้เกียรติ เปรียบเสมือนพระภิกษุผู้ทรงภูมิปัญญาที่อธิบายธรรมด้วยความเมตตา
-
-2. ความถูกต้องของเนื้อหา:
-- อ้างอิงคำอธิบายตามหลักพุทธศาสนาเถรวาทและพระไตรปิฎก
-- ถ้าได้รับข้อมูลพระสูตรที่เกี่ยวข้อง ให้อ้างอิงจากข้อมูลนั้นเป็นหลัก พร้อมระบุชื่อพระสูตรและเล่ม
-- ถ้าไม่มีข้อมูลพระสูตรที่ตรงกัน ให้ตอบจากความรู้ทั่วไปเกี่ยวกับพระพุทธศาสนา
-- ห้ามกุเรื่องคำคมหรือการอ้างอิงพระคัมภีร์ขึ้นมาเอง
-- หากไม่แน่ใจในรายละเอียดเฉพาะเจาะจง ให้ตอบตามตรงและหลีกเลี่ยงการคาดเดา
-
-3. รูปแบบการอธิบาย:
-- อธิบายแนวคิดทางธรรมด้วยภาษาที่นำไปใช้ได้จริงในชีวิตประจำวัน
-- ยกตัวอย่างที่เห็นภาพชัดเจนและเชื่อมโยงกับชีวิตจริงได้
-- มุ่งเน้นช่วยให้ผู้ถามเข้าใจและนำธรรมะไปประยุกต์ใช้ในชีวิตจริง
-- ตอบเป็นภาษาไทยเสมอ
-- อย่าใช้ Markdown formatting (เช่น **, ##, *) ในคำตอบ เพราะจะถูกอ่านออกเสียง ให้ใช้ข้อความธรรมดา
-- ใช้อิโมจิเล็กน้อยเพื่อความเป็นกันเอง (เช่น 🙏 📖 ✨ ☸️)
-
-4. ขอบเขตการตอบคำถาม:
-- ไม่ให้คำแนะนำทางการแพทย์ กฎหมาย หรือการเงิน
-- ไม่โต้เถียงหรือแสดงความคิดเห็นในประเด็นทางการเมือง
-- หากคำถามอยู่นอกเหนือหลักคำสอนทางพุทธศาสนา ให้เบี่ยงประเด็นการสนทนาอย่างนุ่มนวลกลับมาสู่ธรรมะ
-- หากคำถามเกี่ยวข้องกับความทุกข์ใจ ให้ตอบด้วยความเห็นอกเห็นใจและให้คำแนะนำตามหลักธรรม
-
-5. แนวทางการสอน:
-- ส่งเสริมการไตร่ตรองพิจารณามากกว่าการเชื่อตามกันโดยปราศจากการคิดวิเคราะห์
-- เน้นย้ำหลักคำสอนสำคัญ เช่น อริยสัจ 4, มรรคมีองค์ 8, ความไม่เที่ยง (อนิจจัง), ทุกขัง, อนัตตา, สติ
-- ส่งเสริมปัญญา ความเมตตา และการดำเนินชีวิตอย่างมีศีลธรรม
-
-เป้าหมายสูงสุด: ช่วยให้ผู้คนเข้าใจธรรมะอย่างชัดเจน ลดความทุกข์ และสร้างเสริมปัญญาและความสงบสุขในชีวิตประจำวัน`,
+    // ★ System Prompt ถูกย้ายไปฝั่ง Server แล้ว (api/chat.js)
 };
 
 // ============================================
@@ -136,7 +97,15 @@ const DataModule = {
         const cachedData = this._getCache();
         if (cachedData) {
             onProgress && onProgress(50, 'กำลังโหลดจากแคช...');
-            this._processData(cachedData);
+            if (cachedData._optimized) {
+                // Load from optimized cache (pre-processed suttas)
+                this.suttas = cachedData.suttas.map(s => ({
+                    ...s,
+                    _searchText: `${s.title} ${s.content} ${s.memorable} ${s.topicTag} ${s.nounTag} ${s.keywords} ${s.metaphor} ${s.notes}`.toLowerCase(),
+                }));
+            } else {
+                this._processData(cachedData);
+            }
             onProgress && onProgress(100, 'โหลดสำเร็จ');
             return;
         }
@@ -209,13 +178,33 @@ const DataModule = {
             if (!ts || Date.now() - parseInt(ts) > CONFIG.CACHE_DURATION) return null;
             const data = localStorage.getItem(CONFIG.CACHE_KEY);
             if (!data) return null;
-            return JSON.parse(data);
+            const parsed = JSON.parse(data);
+            // Support both old format (raw rows) and new format (processed suttas)
+            if (parsed._optimized) return parsed;
+            return parsed;
         } catch { return null; }
     },
 
     _setCache(rows) {
         try {
-            localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(rows));
+            // ★ Store only essential fields to reduce localStorage usage
+            const optimized = {
+                _optimized: true,
+                suttas: this.suttas.map(s => ({
+                    title: s.title,
+                    volume: s.volume,
+                    topicNum: s.topicNum,
+                    pageNum: s.pageNum,
+                    content: s.content.substring(0, 1000), // Trim long content
+                    notes: s.notes.substring(0, 200),
+                    memorable: s.memorable,
+                    topicTag: s.topicTag,
+                    nounTag: s.nounTag,
+                    keywords: s.keywords,
+                    metaphor: s.metaphor,
+                }))
+            };
+            localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(optimized));
             localStorage.setItem(CONFIG.CACHE_TS_KEY, Date.now().toString());
         } catch (e) {
             console.warn('Cache storage failed:', e);
@@ -344,31 +333,36 @@ const AIModule = {
             : userMessage;
         messages.push({ role: 'user', content: fullUserMessage });
 
-        // Call local proxy → Claude API
+        // ★ Call server proxy — system prompt is now server-side
         const response = await fetch(CONFIG.CHAT_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                system: CONFIG.SYSTEM_PROMPT,
                 messages: messages,
             }),
         });
 
         if (!response.ok) {
             const errorBody = await response.text();
-            console.error('Claude API error:', errorBody);
-            if (response.status === 401 || response.status === 403) {
-                throw new Error('API Key ไม่ถูกต้องหรือหมดอายุ');
+            console.error('API error:', errorBody);
+            if (response.status === 429) {
+                throw new Error('ส่งข้อความบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่');
+            }
+            if (response.status === 403) {
+                throw new Error('การเข้าถึง API ถูกปฏิเสธ');
             }
             throw new Error(`API Error: ${response.status}`);
         }
 
         const data = await response.json();
         const aiText = data?.content?.[0]?.text || 'ขออภัย ไม่สามารถตอบได้ในขณะนี้';
+        const isFallback = data?._fallback === true;
 
         // ★★★ Round 2: Cross-reference AI response against Tipitaka database ★★★
-        // นำคำตอบของ AI ไปค้นหาในชีทพระไตรปิฎกอีกรอบ เพื่อตรวจสอบว่าตรงกับพระสูตรข้อไหน
         const verifiedSuttas = DataModule.search(aiText);
+
+        // ★★★ มหาปเทส 4: Structured Verification Verdict ★★★
+        const verdict = this._generateVerdict(relevantSuttas, verifiedSuttas, isFallback);
 
         // Save to history (plain user message, no context for history)
         this.conversationHistory.push(
@@ -376,7 +370,48 @@ const AIModule = {
             { role: 'assistant', content: aiText }
         );
 
-        return { text: aiText, sources: relevantSuttas, verified: verifiedSuttas };
+        return { text: aiText, sources: relevantSuttas, verified: verifiedSuttas, verdict, isFallback };
+    },
+
+    // ★★★ มหาปเทส 4 — Structured Verdict Generator ★★★
+    _generateVerdict(contextSuttas, verifiedSuttas, isFallback) {
+        const hasContext = contextSuttas && contextSuttas.length > 0;
+        const hasVerified = verifiedSuttas && verifiedSuttas.length > 0;
+
+        // Calculate overlap between context and verified suttas
+        let overlapCount = 0;
+        if (hasContext && hasVerified) {
+            const contextTitles = new Set(contextSuttas.map(s => s.title));
+            overlapCount = verifiedSuttas.filter(s => contextTitles.has(s.title)).length;
+        }
+
+        let verdictType, reasoning;
+        const citations = [];
+
+        if (isFallback) {
+            verdictType = 'fallback';
+            reasoning = 'คำตอบนี้เป็นคำตอบสำรองจากระบบ เนื่องจากไม่สามารถเชื่อมต่อ AI ได้ชั่วคราว';
+        } else if (hasVerified && overlapCount > 0) {
+            verdictType = 'สอดคล้อง';
+            reasoning = `คำตอบของ AI สอดคล้องกับพระสูตร ${overlapCount} รายการ ที่พบในคลังพระไตรปิฎก`;
+            verifiedSuttas.forEach(s => {
+                citations.push({ title: s.title, volume: s.volume, topicNum: s.topicNum });
+            });
+        } else if (hasVerified) {
+            verdictType = 'สอดคล้อง';
+            reasoning = `พบพระสูตร ${verifiedSuttas.length} รายการ ที่สอดคล้องกับเนื้อหาในคำตอบ`;
+            verifiedSuttas.forEach(s => {
+                citations.push({ title: s.title, volume: s.volume, topicNum: s.topicNum });
+            });
+        } else if (hasContext) {
+            verdictType = 'ไม่พบหลักฐาน';
+            reasoning = 'มีพระสูตรประกอบบริบท แต่ไม่พบพระสูตรยืนยันตรงกับคำตอบ AI — คำตอบอาจมาจากความรู้ทั่วไปของโมเดล';
+        } else {
+            verdictType = 'ไม่พบหลักฐาน';
+            reasoning = 'ไม่พบพระสูตรที่เกี่ยวข้องในคลังข้อมูล — คำตอบมาจากความรู้ทั่วไปของโมเดล';
+        }
+
+        return { verdict: verdictType, reasoning, citations, overlapCount };
     },
 };
 
@@ -701,7 +736,7 @@ const BookModule = {
     startThinking() { this.setStatus('thinking', '🤔 กำลังคิด...'); },
     startListening(){ this.setStatus('listening', '🎤 กำลังฟัง...'); },
 
-    showReference(contextSuttas, verifiedSuttas) {
+    showReference(contextSuttas, verifiedSuttas, verdict) {
         const content = document.getElementById('referenceContent');
         if (!content) return;
 
@@ -714,6 +749,32 @@ const BookModule = {
         }
 
         let html = '';
+
+        // ★ Section 0: มหาปเทส 4 Verdict Card
+        if (verdict) {
+            const verdictColors = {
+                'สอดคล้อง': { bg: 'rgba(56, 161, 105, 0.15)', border: '#38a169', text: '#276749', icon: '✅', badge: '#38a169' },
+                'ไม่พบหลักฐาน': { bg: 'rgba(237, 137, 54, 0.15)', border: '#ed8936', text: '#c05621', icon: '⚠️', badge: '#dd6b20' },
+                'fallback': { bg: 'rgba(160, 174, 192, 0.15)', border: '#a0aec0', text: '#718096', icon: '🔄', badge: '#718096' },
+            };
+            const vc = verdictColors[verdict.verdict] || verdictColors['ไม่พบหลักฐาน'];
+            html += `
+                <div style="background: ${vc.bg}; border: 2px solid ${vc.border}; border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <span style="font-size: 1.3rem;">${vc.icon}</span>
+                        <h4 style="margin: 0; color: ${vc.text}; font-size: 1rem;">มหาปเทส 4 — ผลการตรวจสอบ</h4>
+                        <span style="background: ${vc.badge}; color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">${verdict.verdict}</span>
+                    </div>
+                    <p style="margin: 0; font-size: 0.85rem; color: ${vc.text}; line-height: 1.5;">${verdict.reasoning}</p>
+                    ${verdict.citations && verdict.citations.length > 0 ? `
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid ${vc.border}40;">
+                            <p style="margin: 0 0 4px 0; font-size: 0.8rem; color: ${vc.text}; font-weight: 600;">อ้างอิง:</p>
+                            ${verdict.citations.map(c => `<p style="margin: 2px 0; font-size: 0.8rem; color: ${vc.text};">  ะ ${c.title} (เล่ม ${c.volume || '-'})</p>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
 
         // ★ Section 1: Verified References (Round 2) — อ้างอิงจากคำตอบ AI
         if (hasVerified) {
@@ -1392,8 +1453,8 @@ const App = {
             // Remove typing indicator
             ChatModule.removeTypingIndicator();
 
-            // Show reference in book panel (2-section: Verified + Context)
-            BookModule.showReference(response.sources, response.verified);
+            // Show reference in book panel (3-section: Verdict + Verified + Context)
+            BookModule.showReference(response.sources, response.verified, response.verdict);
 
             // Add AI response with typing animation
             await ChatModule.addMessage('ai', response.text, true);
@@ -1401,7 +1462,9 @@ const App = {
             // Add source tag with verification badge
             const verifiedCount = response.verified?.length || 0;
             const contextCount = response.sources?.length || 0;
-            if (verifiedCount > 0) {
+            if (response.isFallback) {
+                ChatModule.addSourceTag(contextCount, '🔄 คำตอบสำรอง (ไม่ได้ใช้ AI)');
+            } else if (verifiedCount > 0) {
                 ChatModule.addSourceTag(contextCount, `✅ ตรวจสอบแล้ว ${verifiedCount} พระสูตร`);
             } else {
                 ChatModule.addSourceTag(contextCount);
