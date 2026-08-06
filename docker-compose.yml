@@ -1,0 +1,7 @@
+services:
+  kumpee:
+    build: .
+    container_name: kumpee-ai
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
