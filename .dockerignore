@@ -1,0 +1,9 @@
+node_modules
+*.log
+*.bat
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+.dockerignore
+test_tts.mp3
