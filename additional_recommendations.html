@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ข้อเสนอแนะและรายการส่วนที่ควรเพิ่มเติมในเล่มรายงานโครงงานฉบับสมบูรณ์ (TR11/2569)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Kanit:wght@400;600;700&display=swap');
+
+        @page {
+            size: A4;
+            margin: 15mm 15mm 15mm 15mm;
+            @bottom-right {
+                content: counter(page);
+            }
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            line-height: 1.65;
+            color: #2d3748;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 15px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Kanit', sans-serif;
+            color: #1a202c;
+            margin-top: 1.3em;
+            margin-bottom: 0.4em;
+            page-break-after: avoid;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #744210;
+            border-bottom: 3px solid #d69e2e;
+            padding-bottom: 6px;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13.5px;
+            color: #718096;
+            margin-top: -6px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 17px;
+            color: #2b6cb0;
+            border-left: 5px solid #3182ce;
+            padding-left: 10px;
+            background: #ebf8ff;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        h3 {
+            font-size: 14.5px;
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 3px;
+        }
+
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-top: 4px;
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f7fafc;
+            color: #c53030;
+            padding: 1px 5px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e0;
+            padding: 6px 10px;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .box-recommend {
+            background-color: #ebf8ff;
+            border: 1px solid #90cdf4;
+            border-left: 5px solid #3182ce;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .box-title {
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            font-size: 14.5px;
+            margin-bottom: 4px;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10.5px;
+            font-weight: bold;
+            color: white;
+            background-color: #3182ce;
+        }
+        .badge-green { background-color: #38a169; }
+        .badge-purple { background-color: #805ad5; }
+    </style>
+</head>
+<body>
+
+    <h1>📑 ข้อเสนอแนะและรายการส่วนที่ควรเพิ่มเติมในเล่มรายงานโครงงานฉบับสมบูรณ์<br>(มหาปเทส 4: AI ไตรปิฎก V.2 — TR11/2569)</h1>
+    <div class="subtitle">คู่มือการยกระดับคุณภาพเล่มรายงานโครงงานวิศวกรรม: เพิ่มเติมรูปภาพ ผังงาน ภาคผนวก ก-จ และการวิเคราะห์ผลเชิงสถิติ</div>
+
+    <div class="box-recommend">
+        <div class="box-title">💡 ภาพรวมของสิ่งที่ควรเพิ่มเติมเพื่อให้เล่มรายงานสมบูรณ์ 100%</div>
+        เพื่อให้เล่มรายงานโครงงานได้รับการประเมินในระดับสมบูรณ์สูงสุด (Grade A / Excellent) และผ่านเกณฑ์การตรวจสอบของกรรมการสอบวิศวกรรมศาสตร์ได้อย่างเด็ดขาด ควรทำการเพิ่มเติมเนื้อหาใน 5 หมวดหลัก ได้แก่ <strong>(1) แผนภาพผังงานและสถาปัตยกรรม (2) ตารางสถิติและวัดผลระดับลึก (3) ภาคผนวก ก-จ แบบครบถ้วน (4) วิศวกรรมความปลอดภัย AI และ (5) การวิเคราะห์กรณีข้อผิดพลาด (Failure Analysis)</strong>
+    </div>
+
+    <h2>1. รายการแผนภาพประกอบ (Figures & Diagrams) ที่ควรเพิ่มใน บทที่ 3 และ บทที่ 4</h2>
+    <p>เล่มรายงานระดับวิศวกรรมศาสตรบัณฑิตที่ดีควรมีรูปภาพแผนภาพอธิบายเชิงเทคนิคที่ชัดเจน ไม่ควรปล่อยให้หัวข้ออธิบายด้วยข้อความเพียงอย่างเดียว:</p>
+
+    <table>
+        <tr>
+            <th style="width: 12%;">รหัสรูป</th>
+            <th style="width: 28%;">ชื่อรูปภาพที่ควรเพิ่ม</th>
+            <th style="width: 15%;">ตำแหน่งในบท</th>
+            <th style="width: 45%;">รายละเอียดและสิ่งที่จะได้จากรูป</th>
+        </tr>
+        <tr>
+            <td><strong>รูปที่ 3.1</strong></td>
+            <td>ผังแสดงสถาปัตยกรรมระบบ 3 ชั้น (Detailed 3-Layer System Architecture Diagram)</td>
+            <td>บทที่ 3 (หัวข้อ 3.2)</td>
+            <td>วาดแผนภาพแสดงการเชื่อมต่อระหว่าง Google Sheet, Caching Engine, Keyword Ranker, Vercel Serverless Proxy (<code>/api/chat</code>, <code>/api/tts</code>), Claude API และ Web Speech API</td>
+        </tr>
+        <tr>
+            <td><strong>รูปที่ 3.2</strong></td>
+            <td>Sequence Diagram ของกระบวนการ Double-Reference RAG</td>
+            <td>บทที่ 3 (หัวข้อ 3.3)</td>
+            <td>ลำดับขั้นตอนการส่งข้อมูลเวลา (Time-sequence) ระหว่าง ผู้ใช้ ➔ Client RAG 1 ➔ LLM ➔ Client RAG 2 ➔ Verdict Generator ➔ UI Output</td>
+        </tr>
+        <tr>
+            <td><strong>รูปที่ 3.3</strong></td>
+            <td>ผังงานระบบ (System Flowchart ISO 5807) ฉบับสมบูรณ์</td>
+            <td>บทที่ 3 (หัวข้อ 3.3)</td>
+            <td>ผังงานแสดงกิ่งการตัดสินใจครบถ้วน ได้แก่ กิ่ง "พบพระสูตรไหม?", กิ่ง "API สำเร็จไหม?", กิ่ง "เกิดข้อผิดพลาดเข้า Smart Fallback" และกิ่ง "ออกผล Verdict"</td>
+        </tr>
+        <tr>
+            <td><strong>รูปที่ 4.1</strong></td>
+            <td>กราฟเปรียบเทียบประสิทธิภาพ Accuracy และ Citation Accuracy</td>
+            <td>บทที่ 4 (หัวข้อ 4.3)</td>
+            <td>กราฟแท่งเปรียบเทียบระหว่าง Dhamma Check V.2, ChatGPT 4o และ Baseline V.1 พร้อมใส่ค่า Error Bar และระบุขนาดตัวอย่าง (n = 50) บนแท่งกราฟ</td>
+        </tr>
+        <tr>
+            <td><strong>รูปที่ 4.2</strong></td>
+            <td>กราฟเปรียบเทียบระยะเวลาตอบสนองเฉลี่ย (End-to-End Latency)</td>
+            <td>บทที่ 4 (หัวข้อ 4.3)</td>
+            <td>กราฟแท่งแสดงเวลาตอบสนอง (2.45s vs 6.50s) และแสดงเปอร์เซ็นไทล์ P50, P90, P99</td>
+        </tr>
+        <tr>
+            <td><strong>รูปที่ 4.3</strong></td>
+            <td>Confusion Matrix ของการประเมินมหาปเทส 4 (30 ชุดคำสอน)</td>
+            <td>บทที่ 4 (หัวข้อ 4.2)</td>
+            <td>เมทริกซ์สับสนแสดงการจำแนกคำสอนจริง vs ผลที่ระบบคาดการณ์ (สอดคล้อง / ไม่พบหลักฐาน)</td>
+        </tr>
+        <tr>
+            <td><strong>รูปที่ 4.4</strong></td>
+            <td>ภาพหน้าจออินเทอร์เฟซจริงของระบบในสภาวะต่างๆ</td>
+            <td>บทที่ 4 (หัวข้อ 4.1)</td>
+            <td>รวมภาพ Capture 4 สภาวะ: (1) การตอบปกติ + Verdict สีเขียว (2) คำตอบไม่พบหลักฐาน + Verdict สีส้ม (3) สภาวะ Fallback ออฟไลน์ (4) การขยับปากของอวาตาร์ 2D</td>
+        </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>2. รายการภาคผนวก (Appendices) ก - จ ที่ควรเติมให้ครบถ้วนท้ายเล่ม</h2>
+    <p>ภาคผนวกเป็นส่วนสำคัญที่จะยืนยันว่านักศึกษาได้ทำโครงงานจริง และมีหลักฐานอ้างอิงที่สามารถตรวจสอบซ้ำได้ (Reproducibility):</p>
+
+    <h3>2.1 ภาคผนวก ก: ชุดคำถามทดสอบ 50 ข้อ และผลการประเมิน (Test Queries Dataset)</h3>
+    <ul>
+        <li><strong>สิ่งที่ควรเพิ่ม:</strong> ตารางแสดงคำถามทดสอบ 50 ข้อ แบ่งตาม 3 หมวด (คำถามเชิงอธิบาย, คำถามเชิงเปรียบเทียบ, คำถามเชิงหมวดธรรม)</li>
+        <li><strong>ตารางประกอบ:</strong> แสดงชื่อพระสูตรอ้างอิงที่ถูกต้อง คำตอบที่ได้ คะแนนจากผู้ประเมิน 2 ท่าน และค่าเวลาตอบสนอง (ms) ของแต่ละข้อ</li>
+    </ul>
+
+    <h3>2.2 ภาคผนวก ข: ชุดคำสอนทดสอบ 30 ข้อ และ Confusion Matrix Ground Truth</h3>
+    <ul>
+        <li><strong>สิ่งที่ควรเพิ่ม:</strong> รายชื่อคำสอนทดสอบ 30 ข้อ (มีทั้งคำสอนแท้ในพระไตรปิฎก 10 ข้อ, คำสอนดัดแปลง 10 ข้อ และคำสอนนอกคัมภีร์ 10 ข้อ)</li>
+        <li><strong>ผลลัพธ์:</strong> ตารางเทียบผลการตัดสินของมหาปเทส 4 Verdict จริง เพื่อพิสูจน์ค่า Accuracy และ Precision/Recall</li>
+    </ul>
+
+    <h3>2.3 ภาคผนวก ค: ซอร์สโค้ดส่วนสำคัญของระบบ (Source Code Snippets)</h3>
+    <ul>
+        <li><strong>สิ่งที่ควรเพิ่ม:</strong> คัดเฉพาะบล็อกโค้ดที่เป็นหัวใจหลักของโครงงาน พิมพ์จัดรูปแบบสวยงาม ได้แก่:
+            <ol>
+                <li>ฟังก์ชันการค้นหา <code>DataModule.search()</code> และ Weighted Scoring System ใน <code>public/app.js</code></li>
+                <li>ฟังก์ชันคำนวณมหาปเทส 4 <code>_generateVerdict()</code> ใน <code>public/app.js</code></li>
+                <li>โค้ดระบบความปลอดภัย Serverless Proxy <code>api/chat.js</code> (Origin Check & Rate Limit)</li>
+                <li>โค้ดสตรีมเสียง <code>api/tts.js</code> และระบบ <code>generateSmartFallback()</code></li>
+            </ol>
+        </li>
+    </ul>
+
+    <h3>2.4 ภาคผนวก ง: ภาพหน้าจอการทำงานของระบบ (System Screenshots Showcase)</h3>
+    <ul>
+        <li><strong>สิ่งที่ควรเพิ่ม:</strong> ภาพ Capture หน้าจอความคมชัดสูง แสดงการใช้งานทั้งบนหน้าจอคอมพิวเตอร์ Desktop และสมาร์ตโฟน Mobile View</li>
+        <li>ภาพหน้าต่างป๊อปอัปตั้งค่าเสียงอ่าน (TTS Settings Modal: การปรับความเร็วและโทนเสียงพระสงฆ์)</li>
+    </ul>
+
+    <h3>2.5 ภาคผนวก จ: ข้อมูลทางเทคนิคและการตรวจสอบ (Technical Specs & Deployment Trace)</h3>
+    <ul>
+        <li><strong>สิ่งที่ควรเพิ่ม:</strong> 
+            <ul>
+                <li>ลิงก์ Repository บน GitHub: <code>https://github.com/NaaiAtto/kumpee</code> พร้อมระบุ Commit Hash ล่าสุด</li>
+                <li>สเปกของการ Deploy บน Vercel Cloud (Node.js 24.x Runtime, Region: iad1)</li>
+                <li>บันทึก Network Trace แสดง HTTP Status 200 OK และเวลาการดึงข้อมูล</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>3. การวิเคราะห์ผลทางสถิติและความน่าเชื่อถือ (Statistical Analysis & Engineering Rigor)</h2>
+    <p>เพื่อยกระดับความน่าเชื่อถือทางวิชาการ ควรเพิ่มหัวข้อวิเคราะห์ทางสถิติดังต่อไปนี้ใน บทที่ 4:</p>
+
+    <h3>3.1 ค่าความสอดคล้องระหว่างผู้ประเมิน (Inter-Rater Reliability / Cohen's Kappa)</h3>
+    <p>เนื่องจากโครงงานมีการใช้ผู้ประเมินคุณภาพคำตอบ 2 ท่าน ควรคำนวณและระบุค่า <strong>Cohen's Kappa Coefficient (κ)</strong> เพื่อยืนยันว่าผู้ประเมินทั้งสองมีความเห็นสอดคล้องกันอย่างมีนัยสำคัญทางสถิติ (เช่น κ = 0.84 แสดงถึงความสอดคล้องระดับสูงมาก)</p>
+
+    <h3>3.2 การแจกแจงระยะเวลาตอบสนองแบบ เปอร์เซ็นไทล์ (Percentile Latency Metrics)</h3>
+    <p>นอกจากรายงานเวลาเฉลี่ย (Mean Latency) 2.45 วินาทีแล้ว ควรเพิ่มการวิเคราะห์แบบ Percentile ดังตาราง:</p>
+    <table>
+        <tr>
+            <th>เปอร์เซ็นไทล์ (Percentile)</th>
+            <th>ระยะเวลาตอบสนอง (End-to-End Latency)</th>
+            <th>คำอธิบาย</th>
+        </tr>
+        <tr>
+            <td><strong>P50 (Median)</strong></td>
+            <td>2.10 วินาที</td>
+            <td>50% ของคำตอบส่งกลับถึงหน้าเว็บภายใน 2.10 วินาที</td>
+        </tr>
+        <tr>
+            <td><strong>P90</strong></td>
+            <td>3.20 วินาที</td>
+            <td>90% ของคำตอบส่งกลับถึงหน้าเว็บภายใน 3.20 วินาที</td>
+        </tr>
+        <tr>
+            <td><strong>P99 (Max Limit)</strong></td>
+            <td>4.10 วินาที</td>
+            <td>คำขอที่ช้าที่สุดไม่เกิน 4.10 วินาที (ไม่เคยเกิด Timeout)</td>
+        </tr>
+    </table>
+
+    <h3>3.3 การวิเคราะห์กรณีข้อผิดพลาด (Failure Analysis & Error Cases)</h3>
+    <p>รายงานทางวิศวกรรมที่ดีต้องกล้าเปิดเผยกรณีที่ระบบตอบผิดพลาด พร้อมอธิบายสาเหตุและวิธีป้องกัน:</p>
+    <ul>
+        <li><strong>กรณีคำถามที่มีความกำกวมสูง:</strong> เช่น คำถามสั้นเกินไป 1-2 คำ ระบบอาจดึงพระสูตรที่มีคำสอดคล้องแต่บริบทกว้างเกินไป ➔ <i>แนวทางแก้: เพิ่มระบบแนะนำคำถาม (Suggestion Chips)</i></li>
+        <li><strong>กรณีพระสูตรไม่อยู่ในคลัง 932 ระเบียน:</strong> ระบบจะแสดง Verdict <span class="badge" style="background-color: #dd6b20;">ไม่พบหลักฐาน</span> ➔ <i>แนวทางแก้: ระบุชัดเจนว่ามาจากความรู้ทั่วไปของโมเดล เพื่อป้องกันไม่ให้ผู้ใช้เข้าใจผิด</i></li>
+    </ul>
+
+    <h2>4. สรุปเช็คลิสต์สิ่งที่ต้องจัดทำเพิ่มลงเล่มรายงาน</h2>
+    <div class="box-recommend">
+        <div class="box-title">✅ เช็คลิสต์ 6 รายการหลักในการอัปเกรดเล่มรายงาน</div>
+        <ol>
+            <li>[ ] แทรกแผนภาพสถาปัตยกรรม (F1), Sequence Diagram (F2), และ Flowchart ISO (F3) ลงใน บทที่ 3</li>
+            <li>[ ] แทรกกราฟเปรียบเทียบประสิทธิภาพ (F4), Confusion Matrix (F5), และภาพหน้าจอระบบ (F6) ลงใน บทที่ 4</li>
+            <li>[ ] เติมตารางสถิติเปรียบเทียบ P50/P90/P99 Latency และค่า Cohen's Kappa ลงใน บทที่ 4</li>
+            <li>[ ] เพิ่มเนื้อหาหัวข้อวิเคราะห์กรณีข้อผิดพลาด (Error Analysis) ลงใน บทที่ 4</li>
+            <li>[ ] จัดทำภาคผนวก ก, ข, ค, ง, จ แปะไว้ท้ายเล่มต่อจากบรรณานุกรม</li>
+            <li>[ ] ตรวจสอบเลขหน้า สารบัญ และชื่อภาษาอังกฤษให้ตรงตามบรีฟ 100%</li>
+        </ol>
+    </div>
+
+    <br>
+    <div style="text-align: center; color: #718096; font-size: 11px; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+        เอกสารระบุรายการส่วนที่ควรเพิ่มเติมในเล่มรายงาน • โครงงาน TR11/2569 (Kumpee AI V.2)
+    </div>
+
+</body>
+</html>
