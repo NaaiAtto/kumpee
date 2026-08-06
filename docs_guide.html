@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>เอกสารอธิบายโค้ดและหลักการทำงานระบบ คัมภีร์พูดได้ (Kumpee AI)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Kanit:wght@400;600;700&display=swap');
+
+        @page {
+            size: A4;
+            margin: 15mm 15mm 15mm 15mm;
+            @bottom-right {
+                content: counter(page);
+            }
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: #2d3748;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 15px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Kanit', sans-serif;
+            color: #1a202c;
+            margin-top: 1.4em;
+            margin-bottom: 0.4em;
+            page-break-after: avoid;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #744210;
+            border-bottom: 3px solid #d69e2e;
+            padding-bottom: 8px;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #718096;
+            margin-top: -8px;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #2b6cb0;
+            border-left: 5px solid #3182ce;
+            padding-left: 10px;
+            background: #ebf8ff;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        h3 {
+            font-size: 15px;
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 3px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-top: 4px;
+            margin-bottom: 12px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f7fafc;
+            color: #c53030;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            font-size: 12.5px;
+        }
+
+        pre {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.45;
+            page-break-inside: avoid;
+        }
+
+        .code-block {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 4px solid #475569;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            page-break-inside: avoid;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e0;
+            padding: 7px 10px;
+            text-align: left;
+            font-size: 12.5px;
+        }
+
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .box {
+            background-color: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-left: 5px solid #38a169;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+            page-break-inside: avoid;
+        }
+
+        .box-warning {
+            background-color: #fffaf0;
+            border: 1px solid #fbd38d;
+            border-left: 5px solid #dd6b20;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+            page-break-inside: avoid;
+        }
+
+        .box-title {
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            font-size: 14.5px;
+            margin-bottom: 4px;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            background-color: #3182ce;
+        }
+
+        .badge-green { background-color: #38a169; }
+        .badge-orange { background-color: #dd6b20; }
+    </style>
+</head>
+<body>
+
+    <h1>📜 รายงานอธิบายโค้ดและหลักการทำงานของระบบ<br>คัมภีร์พูดได้ (Kumpee AI - พระไตรปิฎก AI)</h1>
+    <div class="subtitle">คู่มือเชิงเทคนิคฉบับสมบูรณ์: สถาปัตยกรรมระบบ, โค้ดฝั่ง Client, Local Server, Vercel Serverless และขั้นตอนการ Deploy ขึ้นระบบจริง</div>
+
+    <div class="box">
+        <div class="box-title">📌 สรุปภาพรวมของรายงานฉบับนี้</div>
+        เอกสารฉบับนี้รวบรวมคำอธิบายโครงสร้างระบบ หลักการทำงานของโค้ดทุกไฟล์ กลไกการประมวลผลปัญญาประดิษฐ์ (Claude AI), ระบบตรวจสอบพระสูตรตามมหาปเทส 4, ระบบค้นหาข้อมูล (RAG), ระบบแปลงข้อความเป็นเสียงพูด (TTS) รวมถึงขั้นตอนการนำโค้ดขึ้นเผยแพร่บน Vercel Cloud Serverless อย่างเป็นขั้นตอน
+    </div>
+
+    <h2>1. โครงสร้างไฟล์และสถาปัตยกรรมภาพรวมของระบบ (System Architecture)</h2>
+    <p>ระบบ <strong>คัมภีร์พูดได้ (Kumpee AI)</strong> ถูกออกแบบตามสถาปัตยกรรมแบบ Decoupled Web Application ซึ่งแบ่งภาระหน้าที่อย่างชัดเจนระหว่างฝั่งผู้ใช้ (Client-side Frontend) และฝั่งเซิร์ฟเวอร์ (Server Proxy & Cloud Architecture)</p>
+
+    <h3>1.1 โครงสร้างโฟลเดอร์และไฟล์ภายในโครงการ</h3>
+    <table>
+        <tr>
+            <th style="width: 23%;">ชื่อไฟล์ / โฟลเดอร์</th>
+            <th style="width: 23%;">ประเภท/สภาพแวดล้อม</th>
+            <th style="width: 54%;">หน้าที่และคำอธิบาย</th>
+        </tr>
+        <tr>
+            <td><code>public/app.js</code></td>
+            <td>Front-end (Client)</td>
+            <td>สคริปต์หลักจัดการ UI, ฐานข้อมูลพระสูตร (RAG), อัลกอริทึมค้นหา, การตรวจสอบรอบ 2 (มหาปเทส 4), เสียงพูด (TTS) และ Speech Recognition</td>
+        </tr>
+        <tr>
+            <td><code>public/index.html</code></td>
+            <td>Front-end (Client)</td>
+            <td>โครงสร้าง HTML5 รองรับ Responsive Design หน้าต่างแชต พาเนลคัมภีร์อ้างอิง และตัวอวาตาร์เคลื่อนไหว</td>
+        </tr>
+        <tr>
+            <td><code>public/index.css</code></td>
+            <td>Front-end (Client)</td>
+            <td>การจัดสไตล์ visual aesthetics (Theme สีทองโบราณ-เข้ม, Glassmorphism, Micro-animations)</td>
+        </tr>
+        <tr>
+            <td><code>server.js</code></td>
+            <td>Back-end (Local Server)</td>
+            <td>Node.js HTTP Server สำหรับรันในเครื่องท้องถิ่น (Port 8080) ทำหน้าที่บริการไฟล์ Static Files และ Proxy ไปยัง Claude API & Google TTS</td>
+        </tr>
+        <tr>
+            <td><code>api/chat.js</code></td>
+            <td>Serverless (Vercel Cloud)</td>
+            <td>Vercel Serverless Function (POST /api/chat) สำหรับเชื่อมต่อ Claude API พร้อมระบบยึด System Prompt, ตรวจสอบ Origin, และ Rate Limit</td>
+        </tr>
+        <tr>
+            <td><code>api/tts.js</code></td>
+            <td>Serverless (Vercel Cloud)</td>
+            <td>Vercel Serverless Function (GET /api/tts) สำหรับดึงไฟล์เสียงภาษาไทย MP3 จาก Google Translate TTS Stream</td>
+        </tr>
+        <tr>
+            <td><code>vercel.json</code></td>
+            <td>Config (Vercel)</td>
+            <td>ไฟล์กำหนดค่า routing, output directory และ CORS headers บน Vercel Cloud Platform</td>
+        </tr>
+        <tr>
+            <td><code>package.json</code></td>
+            <td>Config (Node.js)</td>
+            <td>ไฟล์ระบุชื่อโครงการ เวอร์ชัน สคริปต์ build และรุ่นของ Node.js (24.x)</td>
+        </tr>
+        <tr>
+            <td><code>Dockerfile</code> & <code>docker-compose.yml</code></td>
+            <td>Deployment (Container)</td>
+            <td>ไฟล์สำหรับสั่ง Build และ Deploy แอปพลิเคชันผ่าน Docker Container ในเครื่องหรือบน Server อื่นๆ</td>
+        </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>2. โครงสร้างและหลักการทำงานฝั่ง Front-end (Client Application)</h2>
+    <p>ไฟล์ <code>public/app.js</code> เป็นหัวใจหลักในการรันในเบราว์เซอร์ของผู้ใช้ ถูกออกแบบด้วยรูปแบบ Object Literals แบ่งออกเป็น 6 โมดูลหลัก ดังนี้:</p>
+
+    <h3>2.1 โมดูล <code>CONFIG</code> (ค่าคอนฟิกกลาง)</h3>
+    <p>เก็บค่าคงที่สำหรับปรับแต่งพฤติกรรมของแอปพลิเคชัน เช่น URL ของ Google Sheets CSV (932 รายการ), Endpoint API (<code>/api/chat</code>), ชื่อคีย์สำหรับแคช (<code>tipitaka_data_v3</code>), ระยะเวลาแคช (24 ชั่วโมง), ความเร็วการพิมพ์ตัวหนังสือ และขีดจำกัดความยาวบริบท</p>
+
+    <h3>2.2 โมดูล <code>parseCSV()</code> และ <code>DataModule</code> (การจัดการคลังข้อมูลและการทำ RAG)</h3>
+    <ul>
+        <li><strong>การโหลดข้อมูล (<code>DataModule.load</code>):</strong> ตรวจสอบข้อมูลใน <code>localStorage</code> ก่อน หากไม่มีหรือหมดอายุ (เกิน 24 ชม.) จะดึงไฟล์ CSV จาก Google Sheets มาแปลงผ่าน <code>parseCSV()</code> ซึ่งรองรับการแกะข้อความที่ซ้อนในเครื่องหมายคำพูด (Quoted fields) ได้อย่างแม่นยำ</li>
+        <li><strong>ระบบแคชอัจฉริยะ (Storage Optimization):</strong> เพื่อป้องกันปัญหาความจุ <code>localStorage</code> เต็ม (QuotaExceededError) ระบบจะเลือกบันทึกเฉพาะฟิลด์สำคัญ 11 ฟิลด์ และตัดทอนเนื้อหาให้พอดี (1,000 ตัวอักษรต่อระเบียน) ทำให้ลดขนาดแคชลงได้กว่า 70%</li>
+        <li><strong>ระบบค้นหาขั้นสูง (Weighted Search Ranking):</strong> ฟังก์ชัน <code>DataModule.search(query)</code> ใช้อัลกอริทึมให้คะแนนความเกี่ยวข้อง (Scoring System) โดยแบ่งตามความสำคัญ:
+            <ul>
+                <li>ตรงกับชื่อพระสูตรแบบเต็ม (+10 คะแนน)</li>
+                <li>ตรงกับเนื้อหาทั้งหมด (+8 คะแนน)</li>
+                <li>คำตรงกับคีย์เวิร์ดคำสอนสำคัญภาษาไทย เช่น <i>อริยสัจ, ทุกข์, สติ, นิพพาน, ศีล, กรรม</i> (+3 ถึง +5 คะแนน)</li>
+                <li>ตรงกับส่วนประกอบย่อยของคำถาม (+1 ถึง +4 คะแนน)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>2.3 โมดูล <code>AIModule</code> (การสืบค้นคำตอบและการตรวจสอบมหาปเทส 4)</h3>
+    <ul>
+        <li><strong>การส่งคำถาม (Round 1 RAG):</strong> ดึงพระสูตรที่เกี่ยวข้องจาก <code>DataModule.search()</code> รวมกันไม่เกิน 4,000 ตัวอักษร แล้วแนบเป็นบริบทส่งไปยัง <code>/api/chat</code> พร้อมประวัติการสนทนา 12 ข้อความล่าสุด</li>
+        <li><strong>การตรวจสอบย้อนกลับรอบที่ 2 (Round 2 Verification):</strong> เมื่อได้รับคำตอบจาก AI ระบบจะนำคำตอบที่ได้ไปค้นหาซ้ำในคลังพระไตรปิฎกทันที (<code>DataModule.search(aiText)</code>) เพื่อตรวจเช็คว่าเนื้อหาที่ AI ตอบนั้นมีพระสูตรใดในคลังรองรับจริงหรือไม่</li>
+        <li><strong>การประเมินมหาปเทส 4 (<code>_generateVerdict</code>):</strong> ระบบจะประมวลผลและสร้างวัตถุโครงสร้าง (Structured JSON Verdict) เพื่อระบุผลการตรวจสอบ 3 รูปแบบ:
+            <ol>
+                <li><span class="badge badge-green">สอดคล้อง</span> — คำตอบของ AI ตรงกับพระสูตรที่มีในคลังข้อมูล พร้อมระบุรายชื่อพระสูตรอ้างอิง</li>
+                <li><span class="badge badge-orange">ไม่พบหลักฐาน</span> — คำตอบมาจากความรู้ทั่วไปของโมเดล ไม่พบตัวบทพระสูตรยืนยันตรงในคลัง</li>
+                <li><span class="badge" style="background-color: #718096;">คำตอบสำรอง (Fallback)</span> — เกิดจากระบบไม่สามารถเชื่อมต่อ AI ได้ จึงดึงข้อมูลพระสูตรอันดับ 1 มาตอบแทน</li>
+            </ol>
+        </li>
+    </ul>
+
+    <h3>2.4 โมดูล <code>SpeechModule</code> (ระบบเสียงพูด TTS & รับฟังเสียง STT)</h3>
+    <ul>
+        <li><strong>Google TTS Proxy Stream:</strong> แบ่งข้อความออกเป็นท่อนสั้นๆ (~180 ตัวอักษร) ตามจุดจบประโยค แล้วส่งไปเล่นผ่าน HTML5 <code>Audio</code> จาก <code>/api/tts?text=...</code> โดยรองรับการปรับระดับความเร็ว (Rate) และโทนเสียง (Tone) เช่น โทนเสียงพระสงฆ์/นุ่มนวล</li>
+        <li><strong>Web Speech API Fallback:</strong> หากเบราว์เซอร์รองรับ สามารถเลือกใช้เอนจิน <code>SpeechSynthesisUtterance</code> ภาษาไทยในเครื่องได้</li>
+        <li><strong>Speech Recognition (STT):</strong> ใช้ <code>webkitSpeechRecognition</code> ถอดเสียงพูดภาษาไทยเป็นข้อความ แล้วส่งเข้าช่องพิมพ์คำถามให้อัตโนมัติ</li>
+    </ul>
+
+    <h3>2.5 โมดูล <code>BookModule</code>, <code>NavigatorModule</code> และ <code>ChatModule</code> (การแสดงผล UI)</h3>
+    <ul>
+        <li><strong>BookModule:</strong> แสดงการ์ดผลการตรวจสอบ <code>มหาปเทส 4</code> (Verdict Card) และแบ่งส่วนพระสูตรอ้างอิงเป็น 2 กรอบ (กรอบสีเขียว: พระสูตรยืนยันรอบ 2 / กรอบสีทอง: พระสูตรประกอบบริบท)</li>
+        <li><strong>NavigatorModule:</strong> อวาตาร์ 2D ขยับปากตามจังหวะเสียงพูด (Lip-sync Loop) โดยใช้การตัดภาพพื้นหลังขาวออกด้วย HTML5 Canvas (Anti-aliasing edge softening) และรองรับการลากวาง (Draggable) ทั้งบนคอมพิวเตอร์และมือถือ</li>
+        <li><strong>ChatModule & App Controller:</strong> จัดการพิมพ์ตัวหนังสือแบบ Typewriter Animation, ปุ่มหยุดอ่านเสียง (Stop TTS), ชิปคำถามแนะนำ และจัดการส่งคำขอสนทนา</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>3. โครงสร้างและหลักการทำงานเมื่อรันในเครื่องท้องถิ่น (Local Server - <code>server.js</code>)</h2>
+    <p>เมื่อผู้ใช้รันระบบในเครื่องตนเองผ่านคำสั่ง <code>npm start</code> หรือ <code>node server.js</code> (หรือผ่าน <code>start.bat</code> / <code>start.ps1</code>) ไฟล์ <code>server.js</code> จะทำหน้าที่เป็น Full Node.js Web Server บนพอร์ต <code>8080</code></p>
+
+    <h3>3.1 การทำงานของ HTTP Server และ Static File Serving</h3>
+    <ul>
+        <li>ใช้ Node.js native module (<code>http</code>, <code>https</code>, <code>fs</code>, <code>path</code>) โดยไม่ต้องพึ่งพา External Framework ใหญ่ๆ ทำให้โหลดเร็วและกินทรัพยากรต่ำ</li>
+        <li>ฟังก์ชัน <code>serveStaticFile()</code> จะทำหน้าที่บริการไฟล์ <code>index.html</code>, <code>index.css</code>, <code>app.js</code> และรูปภาพจากโฟลเดอร์ <code>public/</code> พร้อมกำหนด MIME Types (<code>text/html</code>, <code>application/javascript</code> ฯลฯ) และป้องกันภัยคุกคาม Directory Traversal</li>
+    </ul>
+
+    <h3>3.2 การทำ API Proxy ไปยัง Anthropic Claude API (<code>handleChatProxy</code>)</h3>
+    <ul>
+        <li><strong>Server-Side System Prompt:</strong> กำหนดบทบาท "คัมภีร์พูดได้" (พระไตรปิฎกโบราณที่มีชีวิต) ไว้ในคีย์คงที่ <code>SYSTEM_PROMPT</code> บนเซิร์ฟเวอร์เท่านั้น เพื่อป้องกันไม่ให้ผู้ใช้แอบแก้ไขหรือส่ง Prompt แปลกปลอมเข้ามาจากฝั่ง Client</li>
+        <li><strong>Rate Limiting (จำกัดความถี่):</strong> ฟังก์ชัน <code>isRateLimited(ip)</code> ตรวจสอบ IP ผู้ยิงคำขอ โดยจำกัดไม่เกิน <strong>15 ครั้งต่อนาทีต่อ IP</strong> หากเกินจะส่ง HTTP Status <code>429 Too Many Requests</code></li>
+        <li><strong>Sanitization (การกรองข้อความ):</strong> จำกัดประวัติสนทนาไม่เกิน 20 ข้อความล่าสุด และจำกัดความยาวไม่เกิน 6,000 ตัวอักษรต่อข้อความ รวมถึงจำกัดขนาด Request Body ไม่เกิน 2MB</li>
+        <li><strong>การเชื่อมต่อ Claude API:</strong> ส่ง Request ด้วยโปรโตคอล <code>https.request</code> ไปยัง Endpoint <code>https.api.anthropic.com/v1/messages</code> โดยใช้โมเดล <code>claude-haiku-4-5-20251001</code></li>
+    </ul>
+
+    <h3>3.3 ระบบ Google TTS Proxy (<code>handleTTSProxy</code>)</h3>
+    <pre>GET /api/tts?text=ข้อความที่ต้องการอ่าน</pre>
+    <ul>
+        <li>รับข้อความเข้ารหัส (URI Encoded) ส่งต่อไปยัง Google Translate TTS Service (<code>translate.google.com/translate_tts?ie=UTF-8&tl=th&client=tw-ob</code>)</li>
+        <li>รองรับการติดตาม HTTP Redirect (Status 301/302) อัตโนมัติ แล้ว Pipe สตรีมไฟล์เสียง <code>audio/mpeg</code> กลับมายังเบราว์เซอร์ พร้อมกำหนด Header <code>Cache-Control: public, max-age=86400</code> (แคชเสียงไว้ 1 วัน)</li>
+    </ul>
+
+    <h3>3.4 ระบบ Smart Fallback Engine ในเครื่อง</h3>
+    <p>หากเครื่องไม่ได้ต่ออินเทอร์เน็ต หรือ Claude API ขัดข้อง ฟังก์ชัน <code>generateSmartFallback()</code> จะทำงานทันที โดยสกัดข้อมูลพระสูตรอันดับ 1 จากบริบทที่แนบมา นำมาเรียบเรียงเป็นคำตอบคำสอนทางธรรมที่สมบูรณ์ แล้วส่งกลับในรูปแบบ JSON พร้อมติดแท็ก <code>_fallback: true</code> ให้ฝั่งหน้าเว็บทราบ</p>
+
+    <div class="page-break"></div>
+
+    <h2>4. โครงสร้างและหลักการทำงานบนเซิร์ฟเวอร์ Cloud (Vercel Serverless Architecture)</h2>
+    <p>เมื่อนำโครงการไปปรับใช้บน Vercel Cloud Platform สถาปัตยกรรมจะเปลี่ยนจาก Server เดี่ยว มาเป็น <strong>Serverless Microservices Architecture</strong> ซึ่งแต่ละ API จะทำงานแยกกันแบบคุ้มค่าและรองรับผู้ใช้จำนวนมากได้พร้อมกัน</p>
+
+    <h3>4.1 ไฟล์การกำหนดค่า <code>vercel.json</code></h3>
+    <div class="code-block">
+{
+  "framework": null,
+  "outputDirectory": "public",
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    }
+  ]
+}
+    </div>
+    <p>ไฟล์นี้บอกให้ Vercel ทราบว่าหน้าเว็บ static อยู่ในโฟลเดอร์ <code>public</code> และเปิดให้เรียกใช้งาน API ย่อยผ่านการตั้งค่า CORS Headers</p>
+
+    <h3>4.2 Vercel Serverless Endpoint 1: <code>api/chat.js</code> (POST /api/chat)</h3>
+    <p>ไฟล์นี้จะถูก Vercel เปลี่ยนให้กลายเป็น Cloud Function (AWS Lambda / Edge Node) ที่จะทำงานเฉพาะเมื่อมีคำขอส่งเข้ามาเท่านั้น:</p>
+    <ol>
+        <li><strong>การตรวจสอบ Origin / Referer (Security Check):</strong>
+            <p>ระบบจะตรวจสอบ Header <code>Origin</code> ของคำขอ หากไม่ได้มาจากโดเมนที่ได้รับอนุญาต (เช่น <code>kumpee-ai-psi.vercel.app</code> หรือ <code>localhost</code>) ระบบจะปฏิเสธคำขอทันทีด้วย HTTP Status <code>403 Forbidden</code> เพื่อป้องกันผู้อื่นนำ API Proxy ไปแอบใช้งาน</p>
+        </li>
+        <li><strong>ระบบจำกัดความถี่ (In-Memory Rate Limiting):</strong>
+            <p>ตรวจสอบ IP ของผู้ใช้งานผ่าน <code>x-forwarded-for</code> โดยจำกัดไม่เกิน 15 คำขอต่อนาที หากเกินจะส่ง <code>429 Too Many Requests</code></p>
+        </li>
+        <li><strong>การล็อก System Prompt ฝั่ง Server:</strong>
+            <p>ระบบจะนำข้อความสนทนาจากผู้ใช้มาทำ Sanitization แล้วส่งไปหา Claude API (<code>claude-haiku-4-5-20251001</code>) ร่วมกับ <code>SYSTEM_PROMPT</code> ที่กำหนดไว้ในคลาวด์เท่านั้น โดยไม่อ่านค่าคีย์หรือ System Prompt จากฝั่งผู้ใช้</p>
+        </li>
+        <li><strong>Smart Fallback บนคลาวด์:</strong>
+            <p>หาก Claude API ส่งผลลัพธ์ผิดพลาด เซิร์ฟเวอร์จะสร้างคำตอบสำรองที่ดึงเนื้อหาพระสูตรที่เกี่ยวข้องมาจัดรูปแบบให้อย่างสวยงาม</p>
+        </li>
+    </ol>
+
+    <h3>4.3 Vercel Serverless Endpoint 2: <code>api/tts.js</code> (GET /api/tts)</h3>
+    <p>ทำหน้าที่เป็นสตรีมมิงพร็อกซีแปลงข้อความภาษาไทยเป็นไฟล์เสียง MP3 จาก Google TTS และส่งบัฟเฟอร์เสียง (ArrayBuffer / Buffer) กลับไปที่หน้าเว็บ พร้อมแคชไฟล์เสียงไว้บน CDN ของ Vercel เพื่อความรวดเร็วในการเล่นครั้งถัดไป</p>
+
+    <div class="page-break"></div>
+
+    <h2>5. ขั้นตอนการอัปเดตและ Deploy โค้ดขึ้นเซิร์ฟเวอร์ (Vercel Deployment Process)</h2>
+    <p>การอัปเดตโค้ดจากเครื่องคอมพิวเตอร์ขึ้นสู่ Vercel Production Server ทำได้อย่างรวดเร็วและปลอดภัย ผ่าน Vercel Command Line Interface (Vercel CLI)</p>
+
+    <h3>ขั้นตอนที่ 1: การเตรียมโค้ดและตรวจสอบความพร้อมในเครื่อง</h3>
+    <ul>
+        <li>ตรวจสอบไฟล์โค้ดในโฟลเดอร์โครงการ <code>d:\project\ไตรปิฎก</code> ว่าไฟล์ <code>public/app.js</code>, <code>api/chat.js</code>, <code>api/tts.js</code> และ <code>server.js</code> ได้รับการบันทึกการแก้ไขเรียบร้อยแล้ว</li>
+        <li>ตรวจสอบว่าการตั้งค่าโมเดลเป็น <code>claude-haiku-4-5-20251001</code> ทั้งหมด</li>
+    </ul>
+
+    <h3>ขั้นตอนที่ 2: การตั้งค่า Environment Variables บน Vercel</h3>
+    <p>หากต้องการระบุ API Key ผ่านตัวแปรสภาพแวดล้อม สามารถสั่งงานผ่าน Vercel CLI ได้ดังนี้:</p>
+    <div class="code-block">
+npx vercel env add CLAUDE_API_KEY production
+npx vercel env add CLAUDE_MODEL production
+    </div>
+
+    <h3>ขั้นตอนที่ 3: คำสั่งสั่งอัปโหลดและ Deploy สู่ Production</h3>
+    <p>เปิด PowerShell ในโฟลเดอร์โครงการ แล้วรันคำสั่งเพียงบรรทัดเดียว:</p>
+
+    <div class="code-block">
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; npx -y vercel --prod --project kumpee-ai --scope stl-s --yes
+    </div>
+
+    <p><strong>คำอธิบายพารามิเตอร์ของคำสั่ง:</strong></p>
+    <ul>
+        <li><code>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass</code> — อนุญาตให้รันสคริปต์ Node/npx ในเซสชัน PowerShell ปัจจุบัน</li>
+        <li><code>npx -y vercel</code> — เรียกใช้งาน Vercel CLI เวอร์ชันล่าสุดโดยอัตโนมัติ</li>
+        <li><code>--prod</code> — ระบุเป้าหมายให้อัปเดตเข้าสู่สภาพแวดล้อม Production (ไม่ใช่แค่ Preview)</li>
+        <li><code>--project kumpee-ai</code> — ระบุชื่อโครงการบน Vercel ให้ตรงกัน</li>
+        <li><code>--scope stl-s</code> — ระบุทีม/บัญชีผู้ดูแลโครงการ</li>
+        <li><code>--yes</code> — ยืนยันการอัปโหลดอัตโนมัติโดยไม่ต้องรอให้ผู้ใช้กดตอบ Y/N</li>
+    </ul>
+
+    <h3>ขั้นตอนที่ 4: สิ่งที่ Vercel ทำเบื้องหลังขณะ Deploy (Build & Routing)</h3>
+    <ol>
+        <li><strong>Uploading:</strong> Vercel CLI จะบีบอัดไฟล์ในโครงการและอัปโหลดขึ้นสู่คลาวด์</li>
+        <li><strong>Building:</strong> Vercel จะรันคำสั่ง <code>npm run build</code> ตรวจสอบโครงสร้างไฟล์ static และรวบรวมไฟล์ในโฟลเดอร์ <code>api/</code> แยกสร้างเป็น Serverless Functions (<code>api/chat</code> และ <code>api/tts</code>) ที่ Washington D.C. Data Center (iad1)</li>
+        <li><strong>Completing & Aliasing:</strong> เมื่อการสร้างระบบเสร็จสมบูรณ์ Vercel จะสร้าง URL การอัปเดตย่อย (เช่น <code>kumpee-ec8cngqj0-stl-s.vercel.app</code>) แล้วสลับโดเมนหลัก (Domain Alias) ทั้งหมด ได้แก่ <code>https://kumpee-ai-psi.vercel.app</code> ให้ชี้มายังโค้ดเวอร์ชันล่าสุดแบบ Zero-Downtime (ผู้ใช้งานไม่รู้สึกว่าเว็บกระตุกหรือดับไปขณะอัปเดต)</li>
+    </ol>
+
+    <h3>ขั้นตอนที่ 5: การตรวจสอบผลลัพธ์หลังการ Deploy (Verification)</h3>
+    <p>หลังการ Deploy สามารถทดสอบความถูกต้องของระบบบนเซิร์ฟเวอร์จริงได้ผ่าน 3 วิธี:</p>
+    <ul>
+        <li><strong>การเช็คความตรงกันของไฟล์ Static:</strong> ตรวจสอบค่า MD5 Hash ของไฟล์ <code>app.js</code>, <code>index.html</code>, <code>index.css</code> ระหว่างเครื่องและเซิร์ฟเวอร์ให้ตรงกัน 100%</li>
+        <li><strong>การทดสอบ API Endpoint:</strong> สั่งยิงคำขอทดสอบไปที่ <code>POST /api/chat</code> เพื่อยืนยันว่าตอบกลับด้วยโมเดล <code>claude-haiku-4-5-20251001</code> และตอบกลับเป็นภาษาไทย</li>
+        <li><strong>การดูไดอารี่บันทึกระบบ (Vercel Logs):</strong> เรียกดูบันทึกเหตุการณ์จริงผ่านคำสั่ง <code>npx vercel logs https://kumpee-ai-psi.vercel.app</code> เพื่อตรวจสอบว่าไม่มีข้อผิดพลาด (Error Log) เกิดขึ้น</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>6. สรุปขั้นตอนการทำงานทั้งหมดตั้งแต่ต้นจนจบ (End-to-End Execution Flow)</h2>
+    <p>เมื่อผู้ใช้งานเปิดหน้าเว็บขึ้นมา การทำงานตั้งแต่ต้นจนจบจะดำเนินไปตามลำดับขั้นตอนดังนี้:</p>
+
+    <div class="box">
+        <div class="box-title">🔄 ลำดับขั้นตอนการทำงานของระบบเมื่อผู้ใช้พิมพ์คำถาม (Sequence Diagram Flow)</div>
+        <ol>
+            <li><strong>ผู้ใช้พิมพ์คำถาม:</strong> เช่น "อริยสัจ 4 คืออะไร" ลงในช่องแชต หรือกดพูดผ่านไมโครโฟน (STT)</li>
+            <li><strong>ค้นหาคลังข้อมูล (Round 1 RAG):</strong> <code>DataModule.search()</code> ค้นหาพระสูตรที่เกี่ยวข้องที่สุดจาก 932 รายการในคลังข้อมูล (ที่โหลดแคชมาจาก Google Sheets)</li>
+            <li><strong>ส่งคำขอไปยัง Serverless Proxy:</strong> <code>AIModule.chat()</code> แนบข้อความพระสูตรประกอบบริบท ยิง Request ไปยัง <code>POST /api/chat</code> บน Vercel Serverless Server</li>
+            <li><strong>ประมวลผลบน Cloud Proxy:</strong> <code>api/chat.js</code> ตรวจสอบ Origin, เช็ค Rate Limit, ผนวก <code>SYSTEM_PROMPT</code> ฝั่งเซิร์ฟเวอร์ แล้วยิงคำขอไปยัง Anthropic Claude API (<code>claude-haiku-4-5-20251001</code>)</li>
+            <li><strong>ตอบกลับสู่ Client:</strong> Claude API คืนคำตอบทางธรรมภาษาไทยส่งกลับมายังหน้าเว็บ</li>
+            <li><strong>ตรวจสอบรอบที่ 2 (มหาปเทส 4):</strong> หน้าเว็บนำคำตอบ AI ที่ได้ ไปค้นหาซ้ำในคลังพระสูตร (<code>DataModule.search(aiText)</code>) แล้วคำนวณสร้างการ์ดผลการตรวจสอบมหาปเทส 4 (Verdict Card: สอดคล้อง / ไม่พบหลักฐาน)</li>
+            <li><strong>แสดงผลบน UI & อ้างอิง:</strong> <code>ChatModule</code> พิมพ์ข้อความคำตอบแบบ Typewriter Animation, <code>BookModule</code> แสดงพาเนลอ้างอิงพระสูตรยืนยัน (กรอบเขียว) และพระสูตรบริบท (กรอบทอง)</li>
+            <li><strong>อ่านออกเสียง (TTS):</strong> <code>SpeechModule</code> ส่งข้อความคำตอบย่อยไปที่ <code>GET /api/tts</code> เพื่อดึงไฟล์เสียง MP3 มาอ่านออกเสียงภาษาไทย พร้อมสั่งให้อวาตาร์ <code>NavigatorModule</code> ขยับปากแบบ Lip-sync เสมือนมีชีวิตจริง</li>
+        </ol>
+    </div>
+
+    <br>
+    <div style="text-align: center; color: #718096; font-size: 12px; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+        เอกสารฉบับนี้จัดทำขึ้นสำหรับโครงการ คัมภีร์พูดได้ (Kumpee AI - พระไตรปิฎก AI) • ปรับปรุงล่าสุด: 7 สิงหาคม 2569
+    </div>
+
+</body>
+</html>
