@@ -3,11 +3,33 @@
    GET /api/tts?text=...
    ============================================ */
 
+const ALLOWED_ORIGINS = [
+    'https://kumpee-ai-psi.vercel.app',
+    'https://kumpee-ai-stl-s.vercel.app',
+    'https://kumpee-ai-naaiatto-stl-s.vercel.app',
+    /^https:\/\/kumpee-.*\.vercel\.app$/,
+    'http://localhost:8080',
+    'http://localhost:3000',
+    'http://127.0.0.1:8080',
+];
+
+function isOriginAllowed(origin) {
+    if (!origin) return false;
+    for (const allowed of ALLOWED_ORIGINS) {
+        if (typeof allowed === 'string' && allowed === origin) return true;
+        if (allowed instanceof RegExp && allowed.test(origin)) return true;
+    }
+    return false;
+}
+
 module.exports = async (req, res) => {
     // CORS Headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin || '';
+    const allowedOrigin = isOriginAllowed(origin) ? origin : ALLOWED_ORIGINS[0];
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Vary', 'Origin');
 
     if (req.method === 'OPTIONS') {
         return res.status(204).end();
