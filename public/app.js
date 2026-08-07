@@ -1179,7 +1179,7 @@ const ChatModule = {
         if (typing) typing.remove();
     },
 
-    addSourceTag(suttaCount) {
+    addSourceTag(suttaCount, customText) {
         const messages = this.messagesContainer.querySelectorAll('.message.ai');
         const lastMsg = messages[messages.length - 1];
         if (!lastMsg) return;
@@ -1189,9 +1189,9 @@ const ChatModule = {
 
         const tag = document.createElement('div');
         tag.className = 'message-source';
-        tag.textContent = suttaCount > 0
+        tag.textContent = customText || (suttaCount > 0
             ? `📖 อ้างอิงจาก ${suttaCount} พระสูตร`
-            : '💡 จากความรู้ทั่วไป';
+            : '💡 จากความรู้ทั่วไป');
         bubble.appendChild(tag);
     },
 
