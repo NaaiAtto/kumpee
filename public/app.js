@@ -211,7 +211,7 @@ const DataModule = {
         }
     },
 
-    search(query) {
+    search(query, options) {
         if (!query || this.suttas.length === 0) return [];
 
         const queryLower = query.toLowerCase()
@@ -258,7 +258,8 @@ const DataModule = {
                 if (nounLower.includes(kw)) score += 3;
             }
 
-            if (score > 0) {
+            const threshold = options?.minScore || 0;
+            if (score > threshold) {
                 scored.push({ sutta, score });
             }
         }
@@ -359,7 +360,7 @@ const AIModule = {
         const isFallback = data?._fallback === true;
 
         // ★★★ Round 2: Cross-reference AI response against Tipitaka database ★★★
-        const verifiedSuttas = DataModule.search(aiText);
+        const verifiedSuttas = DataModule.search(aiText, { minScore: 8 });
 
         // ★★★ มหาปเทส 4: Structured Verification Verdict ★★★
         const verdict = this._generateVerdict(relevantSuttas, verifiedSuttas, isFallback);
@@ -398,11 +399,8 @@ const AIModule = {
                 citations.push({ title: s.title, volume: s.volume, topicNum: s.topicNum });
             });
         } else if (hasVerified) {
-            verdictType = 'สอดคล้อง';
-            reasoning = `พบพระสูตร ${verifiedSuttas.length} รายการ ที่สอดคล้องกับเนื้อหาในคำตอบ`;
-            verifiedSuttas.forEach(s => {
-                citations.push({ title: s.title, volume: s.volume, topicNum: s.topicNum });
-            });
+            verdictType = 'ไม่พบหลักฐาน';
+            reasoning = 'พบพระสูตรที่มีคำคล้ายกันในคำตอบ แต่ไม่ตรงกับบริบทพระสูตรต้นฉบับ — คำตอบอาจมาจากความรู้ทั่วไปของโมเดล';
         } else if (hasContext) {
             verdictType = 'ไม่พบหลักฐาน';
             reasoning = 'มีพระสูตรประกอบบริบท แต่ไม่พบพระสูตรยืนยันตรงกับคำตอบ AI — คำตอบอาจมาจากความรู้ทั่วไปของโมเดล';
@@ -769,7 +767,7 @@ const BookModule = {
                     ${verdict.citations && verdict.citations.length > 0 ? `
                         <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid ${vc.border}40;">
                             <p style="margin: 0 0 4px 0; font-size: 0.8rem; color: ${vc.text}; font-weight: 600;">อ้างอิง:</p>
-                            ${verdict.citations.map(c => `<p style="margin: 2px 0; font-size: 0.8rem; color: ${vc.text};">  ะ ${c.title} (เล่ม ${c.volume || '-'})</p>`).join('')}
+                            ${verdict.citations.map(c => `<p style="margin: 2px 0; font-size: 0.8rem; color: ${vc.text};">  • ${c.title} (เล่ม ${c.volume || '-'})</p>`).join('')}
                         </div>
                     ` : ''}
                 </div>
