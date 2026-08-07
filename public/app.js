@@ -1458,12 +1458,14 @@ const App = {
             await ChatModule.addMessage('ai', response.text, true);
 
             // Add source tag with verification badge
-            const verifiedCount = response.verified?.length || 0;
+            const overlapCount = response.verdict?.overlapCount || 0;
+            const isConsistent = response.verdict?.verdict === 'สอดคล้อง';
             const contextCount = response.sources?.length || 0;
+
             if (response.isFallback) {
                 ChatModule.addSourceTag(contextCount, '🔄 คำตอบสำรอง (ไม่ได้ใช้ AI)');
-            } else if (verifiedCount > 0) {
-                ChatModule.addSourceTag(contextCount, `✅ ตรวจสอบแล้ว ${verifiedCount} พระสูตร`);
+            } else if (isConsistent && overlapCount > 0) {
+                ChatModule.addSourceTag(contextCount, `✅ ตรวจสอบแล้ว ${overlapCount} พระสูตร`);
             } else {
                 ChatModule.addSourceTag(contextCount);
             }
