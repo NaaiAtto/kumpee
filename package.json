@@ -6,6 +6,6 @@
     "build": "echo 'Building static site'"
   },
   "engines": {
-    "node": "24.x"
+    "node": "20.x"
   }
 }
