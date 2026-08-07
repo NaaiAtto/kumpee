@@ -374,28 +374,42 @@ const AIModule = {
         return { text: aiText, sources: relevantSuttas, verified: verifiedSuttas, verdict, isFallback };
     },
 
-    // ★★★ มหาปเทส 4 — Structured Verdict Generator ★★★
+    // ★★★ มหาปเทส 4 — Structured Verdict Generator (Overlap Verification) ★★★
     _generateVerdict(contextSuttas, verifiedSuttas, isFallback) {
+        const hasContext = contextSuttas && contextSuttas.length > 0;
         const hasVerified = verifiedSuttas && verifiedSuttas.length > 0;
-        const citations = [];
+
+        // ★ Overlap Verification: เช็คว่าพระสูตรใน Round 2 ตรงกับ Round 1 หรือไม่
+        let overlapCount = 0;
+        const overlapSuttas = [];
+        if (hasContext && hasVerified) {
+            const contextTitles = new Set(contextSuttas.map(s => s.title));
+            for (const s of verifiedSuttas) {
+                if (contextTitles.has(s.title)) {
+                    overlapCount++;
+                    overlapSuttas.push(s);
+                }
+            }
+        }
 
         let verdictType, reasoning;
+        const citations = [];
 
         if (isFallback) {
             verdictType = 'fallback';
             reasoning = 'คำตอบนี้เป็นคำตอบสำรองจากระบบ เนื่องจากไม่สามารถเชื่อมต่อ AI ได้ชั่วคราว';
-        } else if (hasVerified) {
+        } else if (overlapCount > 0) {
             verdictType = 'สอดคล้อง';
-            reasoning = `คำตอบของ AI สอดคล้องกับพระสูตร ${verifiedSuttas.length} รายการ ที่พบในคลังพระไตรปิฎก`;
-            verifiedSuttas.forEach(s => {
+            reasoning = `คำตอบของ AI สอดคล้องกับพระสูตร ${overlapCount} รายการ ที่พบในคลังพระไตรปิฎก`;
+            overlapSuttas.forEach(s => {
                 citations.push({ title: s.title, volume: s.volume, topicNum: s.topicNum });
             });
         } else {
             verdictType = 'ไม่พบหลักฐาน';
-            reasoning = 'ไม่พบตัวบทพระสูตรยืนยันตรงในคลังข้อมูล — คำตอบมาจากความรู้ทั่วไปของโมเดล';
+            reasoning = 'ไม่พบพระสูตรยืนยันตรงกับคำตอบ AI ในคลังข้อมูล — คำตอบอาจมาจากความรู้ทั่วไปของโมเดล';
         }
 
-        return { verdict: verdictType, reasoning, citations, overlapCount: verifiedSuttas ? verifiedSuttas.length : 0 };
+        return { verdict: verdictType, reasoning, citations, overlapCount };
     },
 };
 
