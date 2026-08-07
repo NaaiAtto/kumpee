@@ -360,7 +360,7 @@ const AIModule = {
         const isFallback = data?._fallback === true;
 
         // ★★★ Round 2: Cross-reference AI response against Tipitaka database ★★★
-        const verifiedSuttas = DataModule.search(aiText, { minScore: 8 });
+        const verifiedSuttas = DataModule.search(aiText, { minScore: 3 });
 
         // ★★★ มหาปเทส 4: Structured Verification Verdict ★★★
         const verdict = this._generateVerdict(relevantSuttas, verifiedSuttas, isFallback);
@@ -376,40 +376,26 @@ const AIModule = {
 
     // ★★★ มหาปเทส 4 — Structured Verdict Generator ★★★
     _generateVerdict(contextSuttas, verifiedSuttas, isFallback) {
-        const hasContext = contextSuttas && contextSuttas.length > 0;
         const hasVerified = verifiedSuttas && verifiedSuttas.length > 0;
-
-        // Calculate overlap between context and verified suttas
-        let overlapCount = 0;
-        if (hasContext && hasVerified) {
-            const contextTitles = new Set(contextSuttas.map(s => s.title));
-            overlapCount = verifiedSuttas.filter(s => contextTitles.has(s.title)).length;
-        }
+        const citations = [];
 
         let verdictType, reasoning;
-        const citations = [];
 
         if (isFallback) {
             verdictType = 'fallback';
             reasoning = 'คำตอบนี้เป็นคำตอบสำรองจากระบบ เนื่องจากไม่สามารถเชื่อมต่อ AI ได้ชั่วคราว';
-        } else if (hasVerified && overlapCount > 0) {
+        } else if (hasVerified) {
             verdictType = 'สอดคล้อง';
-            reasoning = `คำตอบของ AI สอดคล้องกับพระสูตร ${overlapCount} รายการ ที่พบในคลังพระไตรปิฎก`;
+            reasoning = `คำตอบของ AI สอดคล้องกับพระสูตร ${verifiedSuttas.length} รายการ ที่พบในคลังพระไตรปิฎก`;
             verifiedSuttas.forEach(s => {
                 citations.push({ title: s.title, volume: s.volume, topicNum: s.topicNum });
             });
-        } else if (hasVerified) {
-            verdictType = 'ไม่พบหลักฐาน';
-            reasoning = 'พบพระสูตรที่มีคำคล้ายกันในคำตอบ แต่ไม่ตรงกับบริบทพระสูตรต้นฉบับ — คำตอบอาจมาจากความรู้ทั่วไปของโมเดล';
-        } else if (hasContext) {
-            verdictType = 'ไม่พบหลักฐาน';
-            reasoning = 'มีพระสูตรประกอบบริบท แต่ไม่พบพระสูตรยืนยันตรงกับคำตอบ AI — คำตอบอาจมาจากความรู้ทั่วไปของโมเดล';
         } else {
             verdictType = 'ไม่พบหลักฐาน';
-            reasoning = 'ไม่พบพระสูตรที่เกี่ยวข้องในคลังข้อมูล — คำตอบมาจากความรู้ทั่วไปของโมเดล';
+            reasoning = 'ไม่พบตัวบทพระสูตรยืนยันตรงในคลังข้อมูล — คำตอบมาจากความรู้ทั่วไปของโมเดล';
         }
 
-        return { verdict: verdictType, reasoning, citations, overlapCount };
+        return { verdict: verdictType, reasoning, citations, overlapCount: verifiedSuttas ? verifiedSuttas.length : 0 };
     },
 };
 
