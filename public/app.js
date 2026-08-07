@@ -195,7 +195,7 @@ const DataModule = {
                     volume: s.volume,
                     topicNum: s.topicNum,
                     pageNum: s.pageNum,
-                    content: s.content.substring(0, 1000), // Trim long content
+                    content: s.content.substring(0, 2500), // Trim long content
                     notes: s.notes.substring(0, 200),
                     memorable: s.memorable,
                     topicTag: s.topicTag,
