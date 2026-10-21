@@ -7,12 +7,38 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
+// Load environment variables from .env.local or .env if present
+function loadEnv() {
+  const envFiles = ['.env.local', '.env'];
+  for (const f of envFiles) {
+    const p = path.join(__dirname, f);
+    if (fs.existsSync(p)) {
+      try {
+        const content = fs.readFileSync(p, 'utf8');
+        content.split(/\r?\n/).forEach(line => {
+          const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+          if (match) {
+            const key = match[1];
+            let value = (match[2] || '').trim();
+            if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+              value = value.slice(1, -1);
+            }
+            if (!process.env[key]) process.env[key] = value;
+          }
+        });
+      } catch (e) {}
+      break;
+    }
+  }
+}
+loadEnv();
+
 // ============================================
 // CONFIG
 // ============================================
-const PORT = 8080;
-const CLAUDE_API_KEY = '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';
-const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
+const PORT = process.env.PORT || 8080;
+const CLAUDE_API_KEY = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || '';
+const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 6000;
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -106,6 +132,8 @@ function detectDoctrinalDistortion(text) {
 const rateLimitMap = new Map();
 
 function isRateLimited(ip) {
+    // Whitelist localhost and local benchmark
+    if (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip === '::ffff:127.0.0.1') return false;
     const now = Date.now();
     const entry = rateLimitMap.get(ip);
     if (rateLimitMap.size > 1000) {
@@ -267,7 +295,7 @@ function handleChatProxy(req, res) {
         // Build Claude API request — ★ Always use server-side SYSTEM_PROMPT
         const claudeBody = JSON.stringify({
             model: CLAUDE_MODEL,
-            max_tokens: 1024,
+            max_tokens: clientData.max_tokens || 400,
             system: SYSTEM_PROMPT,
             messages: messages,
         });

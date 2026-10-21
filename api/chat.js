@@ -4,9 +4,7 @@
    ============================================ */
 
 // ============================================
-// CONFIG
-// ============================================
-const HARDCODED_CLAUDE_KEY = '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';
+const HARDCODED_CLAUDE_KEY = '';
 const DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 6000;
@@ -277,7 +275,7 @@ module.exports = async (req, res) => {
     const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || '';
 
     // --- Resolve API Key (env > hardcoded; client keys no longer accepted) ---
-    const rawKey = process.env.CLAUDE_API_KEY || HARDCODED_CLAUDE_KEY;
+    const rawKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || HARDCODED_CLAUDE_KEY;
     const apiKey = rawKey.replace(/^\uFEFF/, '').trim();
     const targetModel = process.env.CLAUDE_MODEL || DEFAULT_MODEL;
 
@@ -293,7 +291,7 @@ module.exports = async (req, res) => {
                 },
                 body: JSON.stringify({
                     model: targetModel,
-                    max_tokens: 1024,
+                    max_tokens: bodyData.max_tokens || 400,
                     system: SYSTEM_PROMPT,  // ★ Always use server-side prompt
                     messages: messages,
                 }),
