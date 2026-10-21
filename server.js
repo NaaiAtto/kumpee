@@ -60,7 +60,45 @@ const SYSTEM_PROMPT = `คุณคือ "คัมภีร์พูดได�
 - เน้นย้ำหลักคำสอนสำคัญ เช่น อริยสัจ 4, มรรคมีองค์ 8, ความไม่เที่ยง (อนิจจัง), ทุกขัง, อนัตตา, สติ
 - ส่งเสริมปัญญา ความเมตตา และการดำเนินชีวิตอย่างมีศีลธรรม
 
+6. การตรวจสอบข้อความคลาดเคลื่อนและการปฏิเสธข้อความที่ไม่ถูกต้อง (ตามหลักมหาปเทส 4):
+- หากคำถามมีประเด็น ข้อความ หรือความเชื่อที่คลาดเคลื่อน บิดเบือน หรือขัดแย้งกับหลักพระธรรมวินัย (เช่น ถามว่าดื่มสุราไม่ผิดศีลใช่ไหม, พระพุทธเจ้าอนุญาตให้เสพเมถุนใช่ไหม, ฆ่าคนเลวได้บุญใช่ไหม, จิตหรือนิพพานเป็นอัตตาเที่ยงแท้ใช่ไหม, หรืออ้างพุทธวจนปลอม/คำคมปลอม)
+- ให้ชี้แจงอย่างชัดเจนและสุภาพทันทีว่า ข้อความดังกล่าว "คลาดเคลื่อนจากหลักพระธรรมวินัย" หรือ "ไม่มีปรากฏในพระไตรปิฎก" หรือ "เป็นความเข้าใจผิดที่ขัดต่อหลักธรรม" พร้อมอธิบายตัวบทพระธรรมวินัยและพุทธวจนะที่ถูกต้องตามหลักเถรวาทเสมอ
+
 เป้าหมายสูงสุด: ช่วยให้ผู้คนเข้าใจธรรมะอย่างชัดเจน ลดความทุกข์ และสร้างเสริมปัญญาและความสงบสุขในชีวิตประจำวัน`;
+
+// ============================================
+// DOCTRINAL DISTORTION DETECTOR (Mahapadesa 4)
+// ============================================
+function detectDoctrinalDistortion(text) {
+    if (!text || typeof text !== 'string') return false;
+    const lower = text.toLowerCase();
+    const distortionKeywords = [
+        'คลาดเคลื่อน',
+        'ขัดกับหลัก',
+        'ขัดแย้งกับหลัก',
+        'ขัดต่อพระธรรมวินัย',
+        'ขัดกับพระธรรมวินัย',
+        'มิใช่คำสอน',
+        'ไม่ใช่คำสอน',
+        'ไม่ปรากฏในพระไตรปิฎก',
+        'ไม่มีปรากฏในพระไตรปิฎก',
+        'ไม่ได้มีบันทึกในพระไตรปิฎก',
+        'มิจฉาทิฏฐิ',
+        'บิดเบือน',
+        'ความเข้าใจผิด',
+        'เข้าใจผิด',
+        'มิได้ทรงอนุญาต',
+        'ไม่ได้ทรงอนุญาต',
+        'มิได้ทรงอนุโลม',
+        'ไม่ได้อนุโลม',
+        'มิได้ทรงบัญญัติ',
+        'ไม่ใช่พุทธวจนะ',
+        'มิใช่พุทธวจนะ',
+        'คำสอนที่แต่งขึ้นใหม่',
+        'แอบอ้าง'
+    ];
+    return distortionKeywords.some(kw => lower.includes(kw));
+}
 
 // ============================================
 // RATE LIMITER
@@ -250,16 +288,29 @@ function handleChatProxy(req, res) {
 
         const proxyReq = https.request(options, (proxyRes) => {
             if (proxyRes.statusCode === 200) {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                proxyRes.pipe(res);
+                let responseData = '';
+                proxyRes.on('data', chunk => responseData += chunk);
+                proxyRes.on('end', () => {
+                    try {
+                        const parsed = JSON.parse(responseData);
+                        const aiText = parsed?.content?.[0]?.text || '';
+                        parsed._isDistorted = detectDoctrinalDistortion(aiText);
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(parsed));
+                    } catch (e) {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(responseData);
+                    }
+                });
             } else {
                 let errData = '';
                 proxyRes.on('data', chunk => errData += chunk);
                 proxyRes.on('end', () => {
                     console.warn(`Claude API status ${proxyRes.statusCode}, using Smart Fallback`);
                     const fallbackText = generateSmartFallback(lastMsg);
+                    const isDistorted = detectDoctrinalDistortion(fallbackText) || detectDoctrinalDistortion(lastMsg);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ content: [{ text: fallbackText }], _fallback: true }));
+                    res.end(JSON.stringify({ content: [{ text: fallbackText }], _fallback: true, _isDistorted: isDistorted }));
                 });
             }
         });
@@ -267,18 +318,20 @@ function handleChatProxy(req, res) {
         proxyReq.on('error', (err) => {
             console.error('Claude API proxy error:', err.message);
             const fallbackText = generateSmartFallback(lastMsg);
+            const isDistorted = detectDoctrinalDistortion(fallbackText) || detectDoctrinalDistortion(lastMsg);
             if (!res.headersSent) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ content: [{ text: fallbackText }], _fallback: true }));
+                res.end(JSON.stringify({ content: [{ text: fallbackText }], _fallback: true, _isDistorted: isDistorted }));
             }
         });
 
         proxyReq.setTimeout(30000, () => {
             proxyReq.destroy();
             const fallbackText = generateSmartFallback(lastMsg);
+            const isDistorted = detectDoctrinalDistortion(fallbackText) || detectDoctrinalDistortion(lastMsg);
             if (!res.headersSent) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ content: [{ text: fallbackText }], _fallback: true }));
+                res.end(JSON.stringify({ content: [{ text: fallbackText }], _fallback: true, _isDistorted: isDistorted }));
             }
         });
 

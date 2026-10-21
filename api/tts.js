@@ -7,7 +7,6 @@ const ALLOWED_ORIGINS = [
     'https://kumpee-ai-psi.vercel.app',
     'https://kumpee-ai-stl-s.vercel.app',
     'https://kumpee-ai-naaiatto-stl-s.vercel.app',
-    /^https:\/\/kumpee-.*\.vercel\.app$/,
     'http://localhost:8080',
     'http://localhost:3000',
     'http://127.0.0.1:8080',

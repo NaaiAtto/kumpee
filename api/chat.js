@@ -20,7 +20,6 @@ const ALLOWED_ORIGINS = [
     'https://kumpee-ai-psi.vercel.app',
     'https://kumpee-ai-stl-s.vercel.app',
     'https://kumpee-ai-naaiatto-stl-s.vercel.app',
-    /^https:\/\/kumpee-.*\.vercel\.app$/,
     'http://localhost:8080',
     'http://localhost:3000',
     'http://127.0.0.1:8080',
@@ -68,7 +67,45 @@ const SYSTEM_PROMPT = `คุณคือ "คัมภีร์พูดได�
 - เน้นย้ำหลักคำสอนสำคัญ เช่น อริยสัจ 4, มรรคมีองค์ 8, ความไม่เที่ยง (อนิจจัง), ทุกขัง, อนัตตา, สติ
 - ส่งเสริมปัญญา ความเมตตา และการดำเนินชีวิตอย่างมีศีลธรรม
 
+6. การตรวจสอบข้อความคลาดเคลื่อนและการปฏิเสธข้อความที่ไม่ถูกต้อง (ตามหลักมหาปเทส 4):
+- หากคำถามมีประเด็น ข้อความ หรือความเชื่อที่คลาดเคลื่อน บิดเบือน หรือขัดแย้งกับหลักพระธรรมวินัย (เช่น ถามว่าดื่มสุราไม่ผิดศีลใช่ไหม, พระพุทธเจ้าอนุญาตให้เสพเมถุนใช่ไหม, ฆ่าคนเลวได้บุญใช่ไหม, จิตหรือนิพพานเป็นอัตตาเที่ยงแท้ใช่ไหม, หรืออ้างพุทธวจนปลอม/คำคมปลอม)
+- ให้ชี้แจงอย่างชัดเจนและสุภาพทันทีว่า ข้อความดังกล่าว "คลาดเคลื่อนจากหลักพระธรรมวินัย" หรือ "ไม่มีปรากฏในพระไตรปิฎก" หรือ "เป็นความเข้าใจผิดที่ขัดต่อหลักธรรม" พร้อมอธิบายตัวบทพระธรรมวินัยและพุทธวจนะที่ถูกต้องตามหลักเถรวาทเสมอ
+
 เป้าหมายสูงสุด: ช่วยให้ผู้คนเข้าใจธรรมะอย่างชัดเจน ลดความทุกข์ และสร้างเสริมปัญญาและความสงบสุขในชีวิตประจำวัน`;
+
+// ============================================
+// DOCTRINAL DISTORTION DETECTOR (Mahapadesa 4)
+// ============================================
+function detectDoctrinalDistortion(text) {
+    if (!text || typeof text !== 'string') return false;
+    const lower = text.toLowerCase();
+    const distortionKeywords = [
+        'คลาดเคลื่อน',
+        'ขัดกับหลัก',
+        'ขัดแย้งกับหลัก',
+        'ขัดต่อพระธรรมวินัย',
+        'ขัดกับพระธรรมวินัย',
+        'มิใช่คำสอน',
+        'ไม่ใช่คำสอน',
+        'ไม่ปรากฏในพระไตรปิฎก',
+        'ไม่มีปรากฏในพระไตรปิฎก',
+        'ไม่ได้มีบันทึกในพระไตรปิฎก',
+        'มิจฉาทิฏฐิ',
+        'บิดเบือน',
+        'ความเข้าใจผิด',
+        'เข้าใจผิด',
+        'มิได้ทรงอนุญาต',
+        'ไม่ได้ทรงอนุญาต',
+        'มิได้ทรงอนุโลม',
+        'ไม่ได้อนุโลม',
+        'มิได้ทรงบัญญัติ',
+        'ไม่ใช่พุทธวจนะ',
+        'มิใช่พุทธวจนะ',
+        'คำสอนที่แต่งขึ้นใหม่',
+        'แอบอ้าง'
+    ];
+    return distortionKeywords.some(kw => lower.includes(kw));
+}
 
 // ============================================
 // RATE LIMITER (in-memory, per serverless instance)
@@ -265,6 +302,8 @@ module.exports = async (req, res) => {
             if (claudeResponse.ok) {
                 const data = await claudeResponse.json();
                 if (data?.content?.[0]?.text) {
+                    const aiText = data.content[0].text;
+                    data._isDistorted = detectDoctrinalDistortion(aiText);
                     return res.status(200).json(data);
                 }
             } else {
@@ -281,5 +320,6 @@ module.exports = async (req, res) => {
     return res.status(200).json({
         content: [{ text: fallbackText }],
         _fallback: true,  // ★ Flag so client knows this is a fallback
+        _isDistorted: detectDoctrinalDistortion(fallbackText) || detectDoctrinalDistortion(lastUserMsg),
     });
 };

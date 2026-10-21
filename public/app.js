@@ -358,12 +358,13 @@ const AIModule = {
         const data = await response.json();
         const aiText = data?.content?.[0]?.text || 'ขออภัย ไม่สามารถตอบได้ในขณะนี้';
         const isFallback = data?._fallback === true;
+        const serverDistorted = data?._isDistorted === true;
 
         // ★★★ Round 2: Cross-reference AI response against Tipitaka database ★★★
         const verifiedSuttas = DataModule.search(aiText, { minScore: 3 });
 
         // ★★★ มหาปเทส 4: Structured Verification Verdict ★★★
-        const verdict = this._generateVerdict(relevantSuttas, verifiedSuttas, isFallback);
+        const verdict = this._generateVerdict(relevantSuttas, verifiedSuttas, isFallback, aiText, userMessage, serverDistorted);
 
         // Save to history (plain user message, no context for history)
         this.conversationHistory.push(
@@ -374,8 +375,40 @@ const AIModule = {
         return { text: aiText, sources: relevantSuttas, verified: verifiedSuttas, verdict, isFallback };
     },
 
-    // ★★★ มหาปเทส 4 — Structured Verdict Generator (Overlap Verification) ★★★
-    _generateVerdict(contextSuttas, verifiedSuttas, isFallback) {
+    // ★ ตรวจจับร่องรอยข้อความหรือประเด็นที่คลาดเคลื่อน/ขัดแย้งกับพระธรรมวินัย (มหาปเทส 4)
+    _detectDistortion(text) {
+        if (!text || typeof text !== 'string') return false;
+        const lower = text.toLowerCase();
+        const keywords = [
+            'คลาดเคลื่อน',
+            'ขัดกับหลัก',
+            'ขัดแย้งกับหลัก',
+            'ขัดต่อพระธรรมวินัย',
+            'ขัดกับพระธรรมวินัย',
+            'มิใช่คำสอน',
+            'ไม่ใช่คำสอน',
+            'ไม่ปรากฏในพระไตรปิฎก',
+            'ไม่มีปรากฏในพระไตรปิฎก',
+            'ไม่ได้มีบันทึกในพระไตรปิฎก',
+            'มิจฉาทิฏฐิ',
+            'บิดเบือน',
+            'ความเข้าใจผิด',
+            'เข้าใจผิด',
+            'มิได้ทรงอนุญาต',
+            'ไม่ได้ทรงอนุญาต',
+            'มิได้ทรงอนุโลม',
+            'ไม่ได้อนุโลม',
+            'มิได้ทรงบัญญัติ',
+            'ไม่ใช่พุทธวจนะ',
+            'มิใช่พุทธวจนะ',
+            'คำสอนที่แต่งขึ้นใหม่',
+            'แอบอ้าง'
+        ];
+        return keywords.some(k => lower.includes(k));
+    },
+
+    // ★★★ มหาปเทส 4 — Structured Verdict Generator (4-State: สอดคล้อง | คลาดเคลื่อน | ไม่พบหลักฐาน | fallback) ★★★
+    _generateVerdict(contextSuttas, verifiedSuttas, isFallback, aiText = '', userMessage = '', serverDistorted = false) {
         const hasContext = contextSuttas && contextSuttas.length > 0;
         const hasVerified = verifiedSuttas && verifiedSuttas.length > 0;
 
@@ -392,12 +425,23 @@ const AIModule = {
             }
         }
 
+        // ตรวจสอบความคลาดเคลื่อนจาก Server flag หรือการตรวจจับ Keyword ในคำตอบ AI
+        const isDistorted = serverDistorted || this._detectDistortion(aiText);
+
         let verdictType, reasoning;
         const citations = [];
 
         if (isFallback) {
             verdictType = 'fallback';
             reasoning = 'คำตอบนี้เป็นคำตอบสำรองจากระบบ เนื่องจากไม่สามารถเชื่อมต่อ AI ได้ชั่วคราว';
+        } else if (isDistorted) {
+            verdictType = 'คลาดเคลื่อน';
+            reasoning = 'ตรวจพบว่าประเด็นคำถามหรือข้ออ้างมีลักษณะคลาดเคลื่อน/ขัดแย้งกับหลักพระธรรมวินัย โปรดศึกษาเทียบเคียงกับพุทธวจนะที่ถูกต้องในพระไตรปิฎก';
+            // ดึงพระสูตรเทียบเคียงเพื่อใช้เป็นหลักฐานยืนยันหลักธรรมที่ถูกต้อง
+            const refSuttas = (overlapSuttas.length > 0) ? overlapSuttas : (verifiedSuttas && verifiedSuttas.length > 0 ? verifiedSuttas : contextSuttas || []);
+            refSuttas.slice(0, 3).forEach(s => {
+                citations.push({ title: s.title, volume: s.volume, topicNum: s.topicNum });
+            });
         } else if (overlapCount > 0) {
             verdictType = 'สอดคล้อง';
             reasoning = `คำตอบของ AI สอดคล้องกับพระสูตร ${overlapCount} รายการ ที่พบในคลังพระไตรปิฎก`;
@@ -409,7 +453,7 @@ const AIModule = {
             reasoning = 'ไม่พบพระสูตรยืนยันตรงกับคำตอบ AI ในคลังข้อมูล — คำตอบอาจมาจากความรู้ทั่วไปของโมเดล';
         }
 
-        return { verdict: verdictType, reasoning, citations, overlapCount };
+        return { verdict: verdictType, reasoning, citations, overlapCount, isDistorted };
     },
 };
 
@@ -587,7 +631,7 @@ const SpeechModule = {
             // Find best Thai voice
             const voices = window.speechSynthesis.getVoices();
             const thaiVoice = voices.find(v => v.lang.startsWith('th') && (v.name.includes('Male') || v.name.includes('Pattara'))) ||
-                             voices.find(v => v.lang.startsWith('th')) || null;
+                voices.find(v => v.lang.startsWith('th')) || null;
             if (thaiVoice) utterance.voice = thaiVoice;
 
             utterance.onend = () => {
@@ -730,9 +774,9 @@ const BookModule = {
     },
 
     startSpeaking() { this.setStatus('speaking', '🔊 กำลังอ่าน...'); },
-    stopSpeaking()  { this.setStatus(null, 'พร้อมสนทนา'); },
+    stopSpeaking() { this.setStatus(null, 'พร้อมสนทนา'); },
     startThinking() { this.setStatus('thinking', '🤔 กำลังคิด...'); },
-    startListening(){ this.setStatus('listening', '🎤 กำลังฟัง...'); },
+    startListening() { this.setStatus('listening', '🎤 กำลังฟัง...'); },
 
     showReference(contextSuttas, verifiedSuttas, verdict) {
         const content = document.getElementById('referenceContent');
@@ -741,7 +785,7 @@ const BookModule = {
         const hasContext = contextSuttas && contextSuttas.length > 0;
         const hasVerified = verifiedSuttas && verifiedSuttas.length > 0;
 
-        if (!hasContext && !hasVerified) {
+        if (!hasContext && !hasVerified && !verdict) {
             content.innerHTML = '<p class="reference-placeholder">ไม่พบพระสูตรที่เกี่ยวข้องโดยตรง</p>';
             return;
         }
@@ -752,6 +796,7 @@ const BookModule = {
         if (verdict) {
             const verdictColors = {
                 'สอดคล้อง': { bg: 'rgba(56, 161, 105, 0.15)', border: '#38a169', text: '#276749', icon: '✅', badge: '#38a169' },
+                'คลาดเคลื่อน': { bg: 'rgba(229, 62, 62, 0.15)', border: '#e53e3e', text: '#9b2c2c', icon: '❌', badge: '#dc2626' },
                 'ไม่พบหลักฐาน': { bg: 'rgba(237, 137, 54, 0.15)', border: '#ed8936', text: '#c05621', icon: '⚠️', badge: '#dd6b20' },
                 'fallback': { bg: 'rgba(160, 174, 192, 0.15)', border: '#a0aec0', text: '#718096', icon: '🔄', badge: '#718096' },
             };
@@ -766,7 +811,7 @@ const BookModule = {
                     <p style="margin: 0; font-size: 0.85rem; color: ${vc.text}; line-height: 1.5;">${verdict.reasoning}</p>
                     ${verdict.citations && verdict.citations.length > 0 ? `
                         <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid ${vc.border}40;">
-                            <p style="margin: 0 0 4px 0; font-size: 0.8rem; color: ${vc.text}; font-weight: 600;">อ้างอิง:</p>
+                            <p style="margin: 0 0 4px 0; font-size: 0.8rem; color: ${vc.text}; font-weight: 600;">${verdict.verdict === 'คลาดเคลื่อน' ? 'ตัวบทพระธรรมวินัยสำหรับเทียบเคียง:' : 'อ้างอิง:'}</p>
                             ${verdict.citations.map(c => `<p style="margin: 2px 0; font-size: 0.8rem; color: ${vc.text};">  • ${c.title} (เล่ม ${c.volume || '-'})</p>`).join('')}
                         </div>
                     ` : ''}
@@ -776,21 +821,39 @@ const BookModule = {
 
         // ★ Section 1: Verified References (Round 2) — อ้างอิงจากคำตอบ AI
         if (hasVerified) {
+            const isDistorted = verdict?.verdict === 'คลาดเคลื่อน';
+            const vColor = isDistorted ? '#c53030' : '#38a169';
+            const vBg = isDistorted ? 'rgba(229, 62, 62, 0.1)' : 'rgba(56, 161, 105, 0.1)';
+            const vBorder = isDistorted ? 'rgba(229, 62, 62, 0.4)' : 'rgba(56, 161, 105, 0.4)';
+            const vIcon = isDistorted ? '📖' : '✅';
+            const vTitle = isDistorted ? 'พระสูตรที่ใช้เทียบเคียงหลักธรรมที่ถูกต้อง' : 'ตรวจสอบจากคำตอบ AI';
+            const vSub = isDistorted ? 'พระสูตรในพระไตรปิฎกที่ชี้แจงหลักธรรมที่ถูกต้อง' : 'พระสูตรที่สอดคล้องกับคำตอบของ AI';
+
             html += `
-                <div class="reference-section verified-section" style="background: rgba(56, 161, 105, 0.1); border: 1px solid rgba(56, 161, 105, 0.4); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                <div class="reference-section verified-section" style="background: ${vBg}; border: 1px solid ${vBorder}; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        <span>✅</span>
-                        <h4 style="margin: 0; color: #38a169;">ตรวจสอบจากคำตอบ AI</h4>
-                        <span style="background: #38a169; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">${verifiedSuttas.length} รายการ</span>
+                        <span>${vIcon}</span>
+                        <h4 style="margin: 0; color: ${vColor};">${vTitle}</h4>
+                        <span style="background: ${vColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">${verifiedSuttas.length} รายการ</span>
                     </div>
-                    <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #276749;">พระสูตรที่สอดคล้องกับคำตอบของ AI</p>
+                    <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: ${vColor};">${vSub}</p>
                     ${verifiedSuttas.map(s => `
-                        <div class="reference-item" style="border-left: 3px solid #38a169; padding-left: 8px; margin-bottom: 8px;">
-                            <div class="reference-item-title">✅ ${s.title || 'ไม่ระบุชื่อ'}</div>
+                        <div class="reference-item" style="border-left: 3px solid ${vColor}; padding-left: 8px; margin-bottom: 8px;">
+                            <div class="reference-item-title">${vIcon} ${s.title || 'ไม่ระบุชื่อ'}</div>
                             <div class="reference-item-meta">เล่ม: ${s.volume || '-'} | หัวข้อที่: ${s.topicNum || '-'} | หน้า: ${s.pageNum || '-'}</div>
                             <div class="reference-item-text">${(s.content || '').substring(0, 150)}${s.content && s.content.length > 150 ? '...' : ''}</div>
                         </div>
                     `).join('')}
+                </div>
+            `;
+        } else if (verdict?.verdict === 'คลาดเคลื่อน') {
+            html += `
+                <div style="background: rgba(229, 62, 62, 0.1); border: 1px solid rgba(229, 62, 62, 0.4); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>🚫</span>
+                        <h4 style="margin: 0; color: #c53030;">ข้อพึงระวัง: ประเด็นนี้คลาดเคลื่อนจากพระธรรมวินัย</h4>
+                    </div>
+                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #9b2c2c;">ประเด็นในคำถามหรือคำกล่าวอ้างขัดต่อพระธรรมวินัย พึงตรวจสอบเทียบเคียงกับพุทธวจนะแท้จริง</p>
                 </div>
             `;
         } else {
@@ -971,16 +1034,16 @@ const NavigatorModule = {
 
                 for (let i = 0; i < data.length; i += 4) {
                     const r = data[i];
-                    const g = data[i+1];
-                    const b = data[i+2];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
                     // Clean solid white background
                     if (r > 230 && g > 230 && b > 230) {
-                        data[i+3] = 0; // Set Alpha to 0
+                        data[i + 3] = 0; // Set Alpha to 0
                     } else if (r > 205 && g > 205 && b > 205) {
                         // Anti-alias edge softening
                         const avg = (r + g + b) / 3;
                         const alpha = Math.max(0, 255 - (avg - 205) * 5);
-                        data[i+3] = Math.min(data[i+3], alpha);
+                        data[i + 3] = Math.min(data[i + 3], alpha);
                     }
                 }
                 ctx.putImageData(imgData, 0, 0);
@@ -994,7 +1057,7 @@ const NavigatorModule = {
         if (!this.widget) return;
         this.isTalking = true;
         this.widget.classList.add('speaking');
-        
+
         if (this.bubbleText) {
             this.bubbleText.textContent = customText || "🔊 กำลังเล่าธรรมะจากพระไตรปิฎก...";
         }
@@ -1179,7 +1242,7 @@ const ChatModule = {
         if (typing) typing.remove();
     },
 
-    addSourceTag(suttaCount, customText) {
+    addSourceTag(suttaCount, customText, customStyle) {
         const messages = this.messagesContainer.querySelectorAll('.message.ai');
         const lastMsg = messages[messages.length - 1];
         if (!lastMsg) return;
@@ -1189,6 +1252,9 @@ const ChatModule = {
 
         const tag = document.createElement('div');
         tag.className = 'message-source';
+        if (customStyle) {
+            tag.style.cssText = customStyle;
+        }
         tag.textContent = customText || (suttaCount > 0
             ? `📖 อ้างอิงจาก ${suttaCount} พระสูตร`
             : '💡 จากความรู้ทั่วไป');
@@ -1289,7 +1355,7 @@ const App = {
                 }
                 if (ttsToneSelect) ttsToneSelect.value = s.tone || 'normal';
                 if (ttsEngineSelect) ttsEngineSelect.value = s.engine || 'google_th';
-                
+
                 settingsModal.classList.remove('hidden');
             });
         }
@@ -1332,7 +1398,7 @@ const App = {
                 SpeechModule.saveSettings(newSettings);
                 SpeechModule.stopSpeaking();
                 settingsModal.classList.add('hidden');
-                
+
                 if (window.NavigatorModule) {
                     NavigatorModule.startTalking("💾 บันทึกการตั้งค่าระบบและเสียงเรียบร้อยแล้ว!");
                     setTimeout(() => NavigatorModule.stopTalking(), 3000);
@@ -1457,15 +1523,19 @@ const App = {
             // Add AI response with typing animation
             await ChatModule.addMessage('ai', response.text, true);
 
-            // Add source tag with verification badge
+            // Add source tag with verification badge (Mahapadesa 4)
             const overlapCount = response.verdict?.overlapCount || 0;
-            const isConsistent = response.verdict?.verdict === 'สอดคล้อง';
+            const verdictType = response.verdict?.verdict;
+            const isConsistent = verdictType === 'สอดคล้อง';
+            const isDistorted = verdictType === 'คลาดเคลื่อน';
             const contextCount = response.sources?.length || 0;
 
             if (response.isFallback) {
-                ChatModule.addSourceTag(contextCount, '🔄 คำตอบสำรอง (ไม่ได้ใช้ AI)');
+                ChatModule.addSourceTag(contextCount, '🔄 คำตอบสำรอง (ไม่ได้ใช้ AI)', 'background: rgba(160, 174, 192, 0.15); color: #718096; border: 1px solid rgba(160, 174, 192, 0.4);');
+            } else if (isDistorted) {
+                ChatModule.addSourceTag(contextCount, '❌ คลาดเคลื่อนจากหลักธรรม', 'background: rgba(229, 62, 62, 0.15); color: #c53030; border: 1px solid rgba(229, 62, 62, 0.4); font-weight: 600;');
             } else if (isConsistent && overlapCount > 0) {
-                ChatModule.addSourceTag(contextCount, `✅ ตรวจสอบแล้ว ${overlapCount} พระสูตร`);
+                ChatModule.addSourceTag(contextCount, `✅ ตรวจสอบแล้ว ${overlapCount} พระสูตร`, 'background: rgba(56, 161, 105, 0.15); color: #276749; border: 1px solid rgba(56, 161, 105, 0.4); font-weight: 600;');
             } else {
                 ChatModule.addSourceTag(contextCount);
             }
